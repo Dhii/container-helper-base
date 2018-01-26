@@ -45,6 +45,7 @@ trait ContainerGetCapableTrait
      */
     protected function _containerGet($container, $key)
     {
+        $key = $this->_normalizeString($key);
         $isContainer = $container instanceof ContainerInterface;
         $isArrayLike = is_array($container) || $container instanceof ArrayAccess;
         $isObject = is_object($container);
@@ -104,6 +105,22 @@ trait ContainerGetCapableTrait
      * @return Iterator The inner-most iterator, or whatever the test function allows.
      */
     abstract protected function _resolveIterator(Traversable $iterator, $test = null, $limit = null);
+
+    /**
+     * Normalizes a value to its string representation.
+     *
+     * The values that can be normalized are any scalar values, as well as
+     * {@see StringableInterface).
+     *
+     * @since [*next-version*]
+     *
+     * @param string|int|float|bool|Stringable $subject The value to normalize to string.
+     *
+     * @throws InvalidArgumentException If the value cannot be normalized.
+     *
+     * @return string The string that resulted from normalization.
+     */
+    abstract protected function _normalizeString($subject);
 
     /**
      * Creates a new not found exception.
