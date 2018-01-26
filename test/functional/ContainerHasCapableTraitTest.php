@@ -392,6 +392,10 @@ class ContainerHasCapableTraitTest extends TestCase
         $expected = false;
         $container = new ArrayObject([$realKey => $expected]);
 
+        // The method will fail to find the key using array syntax, and will attempt to use iterator strategies.
+        // So this method must be mocked.
+        $subject->method('_resolveIterator')->willReturnArgument(0);
+
         $actual = $reflect->_containerHas($container, $wrongKey);
 
         $this->assertEquals($expected, $actual, 'Expected and retrieved values do not match.');
