@@ -204,7 +204,7 @@ class ContainerGetCapableTraitTest extends TestCase
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
 
-        $key = uniqid('key-');
+        $key = uniqid('key_');
         $expected = uniqid('expected-');
 
         $container = new stdClass();
@@ -226,8 +226,8 @@ class ContainerGetCapableTraitTest extends TestCase
         $subject = $this->createInstance();
         $reflect = $this->reflect($subject);
 
-        $realKey = uniqid('key-');
-        $wrongKey = uniqid('key-');
+        $realKey = uniqid('key_');
+        $wrongKey = uniqid('key_');
         $expected = uniqid('expected-');
 
         $container = new stdClass();
