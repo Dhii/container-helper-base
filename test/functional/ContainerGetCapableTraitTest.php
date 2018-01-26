@@ -296,13 +296,12 @@ class ContainerGetCapableTraitTest extends TestCase
 
         $key = uniqid('key-');
         $expected = uniqid('expected-');
-        // We need to wrap the array iterator because it implements array access
-        $container = new IteratorIterator(new ArrayIterator([$key => $expected]));
+        $container = new IteratorIterator($inner = new ArrayIterator([$key => $expected]));
 
         $subject->expects($this->atLeastOnce())
                 ->method('_resolveIterator')
                 ->with($container)
-                ->willReturnArgument(0);
+                ->willReturn($inner);
 
         $actual = $reflect->_containerGet($container, $key);
 
@@ -323,13 +322,12 @@ class ContainerGetCapableTraitTest extends TestCase
         $realKey = uniqid('key-');
         $wrongKey = uniqid('key-');
         $expected = uniqid('expected-');
-        // We need to wrap the array iterator because it implements array access
-        $container = new IteratorIterator(new ArrayIterator([$realKey => $expected]));
+        $container = new IteratorIterator($inner = new ArrayIterator([$realKey => $expected]));
 
         $subject->expects($this->atLeastOnce())
                 ->method('_resolveIterator')
                 ->with($container)
-                ->willReturnArgument(0);
+                ->willReturn($inner);
 
         $this->setExpectedException(static::NOT_FOUND_EXCEPTION_FQN);
 
