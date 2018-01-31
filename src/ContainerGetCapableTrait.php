@@ -42,7 +42,8 @@ trait ContainerGetCapableTrait
      */
     protected function _containerGet($container, $key)
     {
-        $key = $this->_normalizeString($key);
+        $strKey = $this->_normalizeString($key);
+        $arrKey = is_int($key) ? $key : $strKey;
         $isContainer = $container instanceof ContainerInterface;
         $isArrayLike = is_array($container) || $container instanceof ArrayAccess;
         $isObject = $container instanceof stdClass;
@@ -57,15 +58,15 @@ trait ContainerGetCapableTrait
         }
 
         if ($isContainer) {
-            return $container->get($key);
+            return $container->get($strKey);
         }
 
-        if ($isArrayLike && isset($container[$key])) {
-            return $container[$key];
+        if ($isArrayLike && isset($container[$arrKey])) {
+            return $container[$arrKey];
         }
 
-        if ($isObject && property_exists($container, $key)) {
-            return $container->{$key};
+        if ($isObject && property_exists($container, $strKey)) {
+            return $container->{$strKey};
         }
 
         throw $this->_createNotFoundException($this->__('Key "%s" was not found', [$key]), null, null, null, $key);
