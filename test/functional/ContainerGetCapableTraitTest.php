@@ -215,6 +215,27 @@ class ContainerGetCapableTraitTest extends TestCase
     }
 
     /**
+     * Tests the `_containerGet()` method with an object to assert whether null values are correctly retrieved.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerGetObjectNull()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $key = uniqid('key_');
+        $expected = null;
+
+        $container = new stdClass();
+        $container->{$key} = $expected;
+
+        $actual = $reflect->_containerGet($container, $key);
+
+        $this->assertEquals($expected, $actual, 'Expected and retrieved values do not match.');
+    }
+
+    /**
      * Tests the `_containerGet()` method with an object to assert whether an exception is thrown when the key is
      * not found.
      *

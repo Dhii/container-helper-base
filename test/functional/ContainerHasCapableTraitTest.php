@@ -237,6 +237,27 @@ class ContainerHasCapableTraitTest extends TestCase
     }
 
     /**
+     * Tests the `_containerHas()` method with an object to assert whether null values are deemed as existing.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerHasObjectNull()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $key = uniqid('key_');
+        $expected = true;
+
+        $container = new stdClass();
+        $container->{$key} = null;
+
+        $actual = $reflect->_containerHas($container, $key);
+
+        $this->assertEquals($expected, $actual, 'Expected and retrieved values do not match.');
+    }
+
+    /**
      * Tests the `_containerHas()` method with an object to assert whether `false` is returned when the object does not
      * have a property that corresponds to the given key.
      *
