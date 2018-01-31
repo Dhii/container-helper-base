@@ -21,10 +21,6 @@ use Traversable;
  * * Objects
  * * {@link \Psr\Container\ContainerInterface}
  * * {@link \ArrayAccess}
- * * {@link \Traversable}
- *
- * All SPL data storage classes are supported, given that they almost all implement either {@link \ArrayAccess} or
- * {@link \Traversable}.
  *
  * @since [*next-version*]
  */
@@ -35,8 +31,8 @@ trait ContainerGetCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param array|object|Traversable|ContainerInterface $container The container to read from.
-     * @param string|Stringable                           $key       The key of hte value to retrieve.
+     * @param array|object|ContainerInterface $container The container to read from.
+     * @param string|Stringable               $key       The key of hte value to retrieve.
      *
      * @return mixed The value mapped to the given key.
      *
@@ -49,9 +45,8 @@ trait ContainerGetCapableTrait
         $isContainer = $container instanceof ContainerInterface;
         $isArrayLike = is_array($container) || $container instanceof ArrayAccess;
         $isObject = is_object($container);
-        $isTraversable = $container instanceof Traversable;
 
-        if (!$isContainer && !$isArrayLike && !$isObject && !$isTraversable) {
+        if (!$isContainer && !$isArrayLike && !$isObject) {
             throw $this->_createInvalidArgumentException(
                 $this->__('Argument #1 is not a valid container'),
                 null,
@@ -72,39 +67,8 @@ trait ContainerGetCapableTrait
             return $container->{$key};
         }
 
-        if ($isTraversable) {
-            try {
-                $iterator = $this->_resolveIterator($container);
-                foreach ($iterator as $_key => $_value) {
-                    if ($_key === $key) {
-                        return $_value;
-                    }
-                }
-            } catch (OutOfRangeException $outOfRangeException) {
-                // Do nothing. The iterator was not resolved, so the key was not found.
-            }
-        }
-
         throw $this->_createNotFoundException($this->__('Key "%s" was not found', [$key]), null, null, null, $key);
     }
-
-    /**
-     * Finds the deepest iterator that matches.
-     *
-     * @since [*next-version*]
-     *
-     * @param Traversable $iterator The iterator to resolve.
-     * @param callable    $test     The test function which determines when the iterator is considered to be resolved.
-     *                              Default: Returns `true` on first found instance of {@see Iterator}.
-     * @param             $limit    int|float|string|Stringable The depth limit for resolution.
-     *
-     * @throws InvalidArgumentException If limit is not a valid integer representation.
-     * @throws OutOfRangeException      If infinite recursion is detected, or the iterator could not be resolved within
-     *                                  the depth limit.
-     *
-     * @return Iterator The inner-most iterator, or whatever the test function allows.
-     */
-    abstract protected function _resolveIterator(Traversable $iterator, $test = null, $limit = null);
 
     /**
      * Normalizes a value to its string representation.

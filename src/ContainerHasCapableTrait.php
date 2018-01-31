@@ -20,10 +20,6 @@ use Traversable;
  * * Objects
  * * {@link \Psr\Container\ContainerInterface}
  * * {@link \ArrayAccess}
- * * {@link \Traversable}
- *
- * All SPL data storage classes are supported, given that they almost all implement either {@link \ArrayAccess} or
- * {@link \Traversable}.
  *
  * @since [*next-version*]
  */
@@ -34,8 +30,8 @@ trait ContainerHasCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param array|ContainerInterface $container The container or array to retrieve from.
-     * @param string|Stringable        $key       The key of the value to retrieve.
+     * @param array|object|ContainerInterface $container The container or array to retrieve from.
+     * @param string|Stringable               $key       The key of the value to retrieve.
      *
      * @throws ContainerExceptionInterface If an error occurred while reading from the container.
      *
@@ -47,9 +43,8 @@ trait ContainerHasCapableTrait
         $isContainer = $container instanceof ContainerInterface;
         $isArrayLike = is_array($container) || $container instanceof ArrayAccess;
         $isObject = is_object($container);
-        $isTraversable = $container instanceof Traversable;
 
-        if (!$isContainer && !$isArrayLike && !$isObject && !$isTraversable) {
+        if (!$isContainer && !$isArrayLike && !$isObject) {
             throw $this->_createInvalidArgumentException(
                 $this->__('Argument #1 is not a valid container'),
                 null,
@@ -70,44 +65,8 @@ trait ContainerHasCapableTrait
             return true;
         }
 
-        if ($isTraversable) {
-            try {
-                /* @var $container Traversable */
-                $iterator = $this->_resolveIterator($container);
-                foreach ($iterator as $_key => $_value) {
-                    if ($_key === $key) {
-                        return true;
-                    }
-                }
-            } catch (OutOfRangeException $outOfRangeException) {
-                throw $this->_createContainerException(
-                    $this->__('An error occurred while reading from the container'),
-                    null,
-                    $outOfRangeException
-                );
-            }
-        }
-
         return false;
     }
-
-    /**
-     * Finds the deepest iterator that matches.
-     *
-     * @since [*next-version*]
-     *
-     * @param Traversable $iterator The iterator to resolve.
-     * @param callable    $test     The test function which determines when the iterator is considered to be resolved.
-     *                              Default: Returns `true` on first found instance of {@see Iterator}.
-     * @param             $limit    int|float|string|Stringable The depth limit for resolution.
-     *
-     * @throws InvalidArgumentException If limit is not a valid integer representation.
-     * @throws OutOfRangeException      If infinite recursion is detected, or the iterator could not be resolved within
-     *                                  the depth limit.
-     *
-     * @return Iterator The inner-most iterator, or whatever the test function allows.
-     */
-    abstract protected function _resolveIterator(Traversable $iterator, $test = null, $limit = null);
 
     /**
      * Normalizes a value to its string representation.
