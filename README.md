@@ -8,4 +8,20 @@
 
 Helper functionality for working with container.
 
+## Traits
+- [`ContainerGetCapableTrait`][ContainerGetCapableTrait] - Allows retrieving values by key from anything that is
+a known container representation. Types include [`ContainerInterface`][ContainerInterface], `array`,
+[`ArrayAccess`][ArrayAccess], and [`stdClass`][stdClass]. Accessing a non-existing key throws a
+[`NotFoundExceptionInterface`][NotFoundExceptionInterface].
+- [`ContainerHasCapableTrait`][ContainerHasCapableTrait] - Allows checking for values by key from anything that is
+a known container implementation.
+
 [Dhii]: https://github.com/Dhii/dhii
+
+[ContainerGetCapableTrait]:                 src/ContainerGetCapableTrait.php
+[ContainerHasCapableTrait]:                 src/ContainerHasCapableTrait.php
+
+[ContainerInterface]:                       https://github.com/php-fig/container/blob/master/src/ContainerInterface.php
+[NotFoundExceptionInterface]:               https://github.com/php-fig/container/blob/master/src/NotFoundExceptionInterface.php
+[ArrayAccess]:                              http://php.net/manual/en/class.arrayaccess.php
+[stdClass]:                                 http://php.net/manual/en/language.types.object.php#language.types.object.casting
