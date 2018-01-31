@@ -64,7 +64,7 @@ trait ContainerGetCapableTrait
             return $container[$key];
         }
 
-        if ($isObject && (property_exists($container, $key)) || isset($container->{$key})) {
+        if ($isObject && property_exists($container, $key)) {
             return $container->{$key};
         }
 
