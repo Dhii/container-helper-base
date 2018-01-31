@@ -17,12 +17,6 @@ use Traversable;
 /**
  * Common functionality for reading data from data sets.
  *
- * Supported data sets are:
- * * Arrays
- * * stdClass
- * * {@link \Psr\Container\ContainerInterface}
- * * {@link \ArrayAccess}
- *
  * @since [*next-version*]
  */
 trait ContainerGetCapableTrait
@@ -32,8 +26,8 @@ trait ContainerGetCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param array|stdClass|ContainerInterface $container The container to read from.
-     * @param string|Stringable                 $key       The key of hte value to retrieve.
+     * @param array|ArrayAccess|stdClass|ContainerInterface $container The container to read from.
+     * @param string|int|float|bool|Stringable              $key       The key of hte value to retrieve.
      *
      * @return mixed The value mapped to the given key.
      *

@@ -13,12 +13,6 @@ use stdClass;
 /**
  * Common functionality for checking if a data set contains a specific key.
  *
- * Supported data sets are:
- * * Arrays
- * * stdClass
- * * {@link \Psr\Container\ContainerInterface}
- * * {@link \ArrayAccess}
- *
  * @since [*next-version*]
  */
 trait ContainerHasCapableTrait
@@ -28,8 +22,8 @@ trait ContainerHasCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param array|stdClass|ContainerInterface $container The container or array to retrieve from.
-     * @param string|Stringable                 $key       The key of the value to retrieve.
+     * @param array|ArrayAccess|stdClass|ContainerInterface $container The container to read from.
+     * @param string|int|float|bool|Stringable              $key       The key of the value to retrieve.
      *
      * @throws ContainerExceptionInterface If an error occurred while reading from the container.
      *
