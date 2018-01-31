@@ -50,7 +50,6 @@ class ContainerGetCapableTraitTest extends TestCase
                 '_normalizeString',
                 '_createInvalidArgumentException',
                 '_createNotFoundException',
-                '_resolveIterator',
             ]
         );
 
@@ -284,57 +283,6 @@ class ContainerGetCapableTraitTest extends TestCase
     }
 
     /**
-     * Tests the `_containerGet()` method with a traversable object to assert whether the correct value is retrieved for
-     * the given key.
-     *
-     * @since [*next-version*]
-     */
-    public function testContainerGetTraversable()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-
-        $key = uniqid('key-');
-        $expected = uniqid('expected-');
-        $container = new IteratorIterator($inner = new ArrayIterator([$key => $expected]));
-
-        $subject->expects($this->atLeastOnce())
-                ->method('_resolveIterator')
-                ->with($container)
-                ->willReturn($inner);
-
-        $actual = $reflect->_containerGet($container, $key);
-
-        $this->assertEquals($expected, $actual, 'Expected and retrieved values do not match.');
-    }
-
-    /**
-     * Tests the `_containerGet()` method with a traversable object to assert whether an exception is thrown when the
-     * key is not found.
-     *
-     * @since [*next-version*]
-     */
-    public function testContainerGetTraversableNotFound()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-
-        $realKey = uniqid('key-');
-        $wrongKey = uniqid('key-');
-        $expected = uniqid('expected-');
-        $container = new IteratorIterator($inner = new ArrayIterator([$realKey => $expected]));
-
-        $subject->expects($this->atLeastOnce())
-                ->method('_resolveIterator')
-                ->with($container)
-                ->willReturn($inner);
-
-        $this->setExpectedException(static::NOT_FOUND_EXCEPTION_FQN);
-
-        $reflect->_containerGet($container, $wrongKey);
-    }
-
-    /**
      * Tests the `_containerGet()` method with array access object to assert whether the correct value is retrieved for
      * the given key.
      *
@@ -369,10 +317,6 @@ class ContainerGetCapableTraitTest extends TestCase
         $wrongKey = uniqid('key-');
         $expected = uniqid('expected-');
         $container = new ArrayObject([$realKey => $expected]);
-
-        // The method will fail to find the key using array syntax, and will attempt to use iterator strategies.
-        // So this method must be mocked.
-        $subject->method('_resolveIterator')->willReturnArgument(0);
 
         $this->setExpectedException(static::NOT_FOUND_EXCEPTION_FQN);
 

@@ -43,7 +43,6 @@ class ContainerHasCapableTraitTest extends TestCase
                 '_normalizeString',
                 '_createInvalidArgumentException',
                 '_createContainerException',
-                '_resolveIterator',
             ]
         );
 
@@ -306,57 +305,6 @@ class ContainerHasCapableTraitTest extends TestCase
     }
 
     /**
-     * Tests the `_containerHas()` method with a traversable object to assert whether `true` is returned when the
-     * given key is encountered in the traversable.
-     *
-     * @since [*next-version*]
-     */
-    public function testContainerHasTraversable()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-
-        $key = uniqid('key-');
-        $expected = true;
-        $container = new IteratorIterator($inner = new ArrayIterator([$key => $expected]));
-
-        $subject->expects($this->atLeastOnce())
-                ->method('_resolveIterator')
-                ->with($container)
-                ->willReturn($inner);
-
-        $actual = $reflect->_containerHas($container, $key);
-
-        $this->assertEquals($expected, $actual, 'Expected and retrieved values do not match.');
-    }
-
-    /**
-     * Tests the `_containerHas()` method with a traversable object to assert whether `false` is returned when the
-     * given key is NOT encountered in the traversable.
-     *
-     * @since [*next-version*]
-     */
-    public function testContainerHasTraversableNotFound()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-
-        $wrongKey = uniqid('key-');
-        $realKey = uniqid('key-');
-        $expected = false;
-        $container = new IteratorIterator($inner = new ArrayIterator([$realKey => $expected]));
-
-        $subject->expects($this->atLeastOnce())
-                ->method('_resolveIterator')
-                ->with($container)
-                ->willReturn($inner);
-
-        $actual = $reflect->_containerHas($container, $wrongKey);
-
-        $this->assertEquals($expected, $actual, 'Expected and retrieved values do not match.');
-    }
-
-    /**
      * Tests the `_containerHas()` method with array access object to assert whether `true` is returned when the given
      * key is found.
      *
@@ -391,10 +339,6 @@ class ContainerHasCapableTraitTest extends TestCase
         $realKey = uniqid('key-');
         $expected = false;
         $container = new ArrayObject([$realKey => $expected]);
-
-        // The method will fail to find the key using array syntax, and will attempt to use iterator strategies.
-        // So this method must be mocked.
-        $subject->method('_resolveIterator')->willReturnArgument(0);
 
         $actual = $reflect->_containerHas($container, $wrongKey);
 
