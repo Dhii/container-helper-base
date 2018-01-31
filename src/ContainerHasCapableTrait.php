@@ -6,18 +6,16 @@ use ArrayAccess;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use InvalidArgumentException;
-use Iterator;
-use OutOfRangeException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
-use Traversable;
+use stdClass;
 
 /**
  * Common functionality for checking if a data set contains a specific key.
  *
  * Supported data sets are:
  * * Arrays
- * * Objects
+ * * stdClass
  * * {@link \Psr\Container\ContainerInterface}
  * * {@link \ArrayAccess}
  *
@@ -30,8 +28,8 @@ trait ContainerHasCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param array|object|ContainerInterface $container The container or array to retrieve from.
-     * @param string|Stringable               $key       The key of the value to retrieve.
+     * @param array|stdClass|ContainerInterface $container The container or array to retrieve from.
+     * @param string|Stringable                 $key       The key of the value to retrieve.
      *
      * @throws ContainerExceptionInterface If an error occurred while reading from the container.
      *

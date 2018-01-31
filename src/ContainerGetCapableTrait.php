@@ -11,6 +11,7 @@ use OutOfRangeException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use stdClass;
 use Traversable;
 
 /**
@@ -18,7 +19,7 @@ use Traversable;
  *
  * Supported data sets are:
  * * Arrays
- * * Objects
+ * * stdClass
  * * {@link \Psr\Container\ContainerInterface}
  * * {@link \ArrayAccess}
  *
@@ -31,8 +32,8 @@ trait ContainerGetCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param array|object|ContainerInterface $container The container to read from.
-     * @param string|Stringable               $key       The key of hte value to retrieve.
+     * @param array|stdClass|ContainerInterface $container The container to read from.
+     * @param string|Stringable                 $key       The key of hte value to retrieve.
      *
      * @return mixed The value mapped to the given key.
      *
