@@ -13,12 +13,6 @@ use stdClass;
 /**
  * Common functionality for checking if a data set contains a specific key.
  *
- * Supported data sets are:
- * * Arrays
- * * stdClass
- * * {@link \Psr\Container\ContainerInterface}
- * * {@link \ArrayAccess}
- *
  * @since [*next-version*]
  */
 trait ContainerHasCapableTrait
@@ -28,8 +22,8 @@ trait ContainerHasCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param array|stdClass|ContainerInterface $container The container or array to retrieve from.
-     * @param string|Stringable                 $key       The key of the value to retrieve.
+     * @param array|ArrayAccess|stdClass|ContainerInterface $container The container to read from.
+     * @param string|int|float|bool|Stringable              $key       The key of the value to retrieve.
      *
      * @throws ContainerExceptionInterface If an error occurred while reading from the container.
      *
@@ -38,32 +32,34 @@ trait ContainerHasCapableTrait
     protected function _containerHas($container, $key)
     {
         $key = $this->_normalizeString($key);
-        $isContainer = $container instanceof ContainerInterface;
-        $isArrayLike = is_array($container) || $container instanceof ArrayAccess;
-        $isObject = $container instanceof stdClass;
 
-        if (!$isContainer && !$isArrayLike && !$isObject) {
-            throw $this->_createInvalidArgumentException(
-                $this->__('Argument #1 is not a valid container'),
-                null,
-                null,
-                $container
-            );
+        if ($container instanceof ContainerInterface) {
+            return $container->has($key);
         }
 
-        if ($isContainer && $container->has($key)) {
-            return true;
+        if ($container instanceof ArrayAccess) {
+            // Catching exceptions thrown by `offsetExists()`
+            try {
+                return isset($container[$key]);
+            } catch (RootException $e) {
+                throw $this->_createContainerException($this->__('Could not check for key "%1$s"', [$key]), null, $e, null);
+            }
         }
 
-        if ($isArrayLike && isset($container[$key])) {
-            return true;
+        if (is_array($container)) {
+            return isset($container[$key]);
         }
 
-        if ($isObject && property_exists($container, $key)) {
-            return true;
+        if ($container instanceof stdClass) {
+            return property_exists($container, $key);
         }
 
-        return false;
+        throw $this->_createInvalidArgumentException(
+            $this->__('Argument #1 is not a valid container'),
+            null,
+            null,
+            $container
+        );
     }
 
     /**

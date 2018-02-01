@@ -2,11 +2,9 @@
 
 namespace Dhii\Data\Container\FuncTest;
 
-use ArrayIterator;
 use ArrayObject;
 use Dhii\Data\Container\ContainerGetCapableTrait as TestSubject;
 use InvalidArgumentException;
-use IteratorIterator;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use stdClass;
 use Xpmock\TestCase;
@@ -58,14 +56,17 @@ class ContainerGetCapableTraitTest extends TestCase
                      ->getMockForTrait();
 
         $mock->method('__')->willReturnArgument(0);
-        $mock->method('_normalizeString')->willReturnArgument(0);
+        $mock->method('_normalizeString')
+            ->will($this->returnCallback(function ($subject) {
+                return (string) $subject;
+            }));
         $mock->method('_createInvalidArgumentException')->willReturnCallback(
-            function($m, $c, $p) {
+            function ($m, $c, $p) {
                 return new InvalidArgumentException($m, $c, $p);
             }
         );
         $mock->method('_createNotFoundException')->willReturnCallback(
-            function($m, $c, $p) {
+            function ($m, $c, $p) {
                 return $this->mockClassAndInterfaces('Exception', [static::NOT_FOUND_EXCEPTION_FQN]);
             }
         );
@@ -319,6 +320,43 @@ class ContainerGetCapableTraitTest extends TestCase
         $container = new ArrayObject([$key => $expected]);
 
         $actual = $reflect->_containerGet($container, $key);
+
+        $this->assertEquals($expected, $actual, 'Expected and retrieved values do not match.');
+    }
+
+    /**
+     * Tests that `_containerGet()` works correctly when using integers to retrieve numeric string keys from `stdClass` objects`.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerGetIntObject()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $expected = uniqid('expected-');
+        $container = new stdClass();
+        $container->{'19'} = $expected;
+
+        $actual = $reflect->_containerGet($container, 19);
+
+        $this->assertEquals($expected, $actual, 'Expected and retrieved values do not match.');
+    }
+
+    /**
+     * Tests that `_containerGet()` works correctly when using integers to retrieve numeric string keys from arrays.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerGetIntArray()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $expected = uniqid('expected-');
+        $container = ['19' => $expected];
+
+        $actual = $reflect->_containerGet($container, 19);
 
         $this->assertEquals($expected, $actual, 'Expected and retrieved values do not match.');
     }

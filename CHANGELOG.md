@@ -6,5 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
 
+## [0.1-alpha2] - 2018-01-31
+### Changed
+- Improved tests.
+- Fixed code standards.
+- Simplified some code.
+- Documentation for types, trows, and other fixed.
+
 ## [0.1-alpha1] - 2018-01-31
 Initial version.

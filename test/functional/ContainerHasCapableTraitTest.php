@@ -2,11 +2,9 @@
 
 namespace Dhii\Data\Container\FuncTest;
 
-use ArrayIterator;
 use ArrayObject;
 use Dhii\Data\Container\ContainerGetCapableTrait as TestSubject;
 use InvalidArgumentException;
-use IteratorIterator;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use stdClass;
 use Xpmock\TestCase;
@@ -51,14 +49,17 @@ class ContainerHasCapableTraitTest extends TestCase
                      ->getMockForTrait();
 
         $mock->method('__')->willReturnArgument(0);
-        $mock->method('_normalizeString')->willReturnArgument(0);
+        $mock->method('_normalizeString')
+            ->will($this->returnCallback(function ($subject) {
+                return (string) $subject;
+            }));
         $mock->method('_createInvalidArgumentException')->willReturnCallback(
-            function($m, $c, $p) {
+            function ($m, $c, $p) {
                 return new InvalidArgumentException($m, $c, $p);
             }
         );
         $mock->method('_createContainerException')->willReturnCallback(
-            function($m, $c, $p) {
+            function ($m, $c, $p) {
                 return $this->mockClassAndInterfaces('Exception', ['Psr\Container\ContainerExceptionInterface']);
             }
         );
@@ -300,6 +301,43 @@ class ContainerHasCapableTraitTest extends TestCase
         $actual = $reflect->_containerHas($container, $key);
 
         $this->assertEquals($expected, $actual, 'Expected and retrieved values do not match.');
+    }
+
+    /**
+     * Tests that `_containerHas()` works correctly when using integers to check for numeric string keys in `stdClass` objects`.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerHasIntObject()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $val = uniqid('expected-');
+        $container = new stdClass();
+        $container->{'19'} = $val;
+
+        $result = $reflect->_containerHas($container, 19);
+
+        $this->assertTrue($result, 'Subject failed to detect key');
+    }
+
+    /**
+     * Tests that `_containerGet()` works correctly when using integers to check for numeric string keys in arrays.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerHasIntArray()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $val = uniqid('expected-');
+        $container = ['19' => $val];
+
+        $result = $reflect->_containerHas($container, 19);
+
+        $this->assertTrue($result, 'Subject failed to detect key');
     }
 
     /**
