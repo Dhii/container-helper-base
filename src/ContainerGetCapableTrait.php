@@ -37,7 +37,7 @@ trait ContainerGetCapableTrait
         $key     = $this->_normalizeString($key);
         // NotFoundExceptionInterface#getDataKey() returns `string` or `Stringable`,
         // so normalize only other types, and preserve original
-        $origKey = is_string($key) || $key instanceof Stringable
+        $origKey = is_string($origKey) || $origKey instanceof Stringable
             ? $origKey
             : $key;
 
