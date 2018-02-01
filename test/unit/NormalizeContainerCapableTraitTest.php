@@ -274,4 +274,30 @@ class NormalizeContainerCapableTraitTest extends TestCase
         $this->setExpectedException('InvalidArgumentException');
         $_subject->_normalizeContainer($container);
     }
+
+    /**
+     * Tests that `_normalizeContainer()` fails as expected when given an invalid container.
+     *
+     * @since [*next-version*]
+     */
+    public function testNormalizeContainerFailureInvalidArgumentNull()
+    {
+        $container = null;
+        $exception = $this->createInvalidArgumentException('Invalid container');
+        $subject = $this->createInstance(['_createInvalidArgumentException']);
+        $_subject = $this->reflect($subject);
+
+        $subject->expects($this->exactly(1))
+            ->method('_createInvalidArgumentException')
+            ->with(
+                $this->isType('string'),
+                null,
+                null,
+                $container
+            )
+            ->will($this->returnValue($exception));
+
+        $this->setExpectedException('InvalidArgumentException');
+        $_subject->_normalizeContainer($container);
+    }
 }
