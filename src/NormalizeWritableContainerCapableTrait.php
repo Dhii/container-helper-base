@@ -10,20 +10,20 @@ use stdClass;
 use Exception as RootException;
 
 /**
- * Functionality for container normalization.
+ * Functionality for writable container normalization.
  *
  * @since [*next-version*]
  */
 trait NormalizeWritableContainerCapableTrait
 {
     /**
-     * Normalizes a container.
+     * Normalizes a writable container.
      *
      * @since [*next-version*]
      *
-     * @param array|ArrayAccess|stdClass $container The container to normalize.
+     * @param array|ArrayAccess|stdClass $container The writable container to normalize.
      *
-     * @throws InvalidArgumentException If the container is invalid.
+     * @throws InvalidArgumentException If not a valid writable container.
      *
      * @return array|ArrayAccess|stdClass A container that can be written to.
      */
