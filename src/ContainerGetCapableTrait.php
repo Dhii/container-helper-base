@@ -6,13 +6,10 @@ use ArrayAccess;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use InvalidArgumentException;
-use Iterator;
-use OutOfRangeException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use stdClass;
-use Traversable;
 
 /**
  * Common functionality for reading data from data sets.
@@ -29,10 +26,10 @@ trait ContainerGetCapableTrait
      * @param array|ArrayAccess|stdClass|ContainerInterface $container The container to read from.
      * @param string|int|float|bool|Stringable              $key       The key of hte value to retrieve.
      *
-     * @return mixed The value mapped to the given key.
-     *
      * @throws ContainerExceptionInterface If an error occurred while reading from the container.
      * @throws NotFoundExceptionInterface  If the key was not found in the container.
+     *
+     * @return mixed The value mapped to the given key.
      */
     protected function _containerGet($container, $key)
     {
@@ -40,7 +37,7 @@ trait ContainerGetCapableTrait
         $arrKey = is_int($key) ? $key : $strKey;
         $isContainer = $container instanceof ContainerInterface;
         $isArrayLike = is_array($container) || $container instanceof ArrayAccess;
-        $isObject = $container instanceof stdClass;
+        $isObject    = $container instanceof stdClass;
 
         if (!$isContainer && !$isArrayLike && !$isObject) {
             throw $this->_createInvalidArgumentException(

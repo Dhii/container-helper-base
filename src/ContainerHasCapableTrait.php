@@ -35,7 +35,7 @@ trait ContainerHasCapableTrait
         $arrKey = is_int($key) ? $key : $strKey;
         $isContainer = $container instanceof ContainerInterface;
         $isArrayLike = is_array($container) || $container instanceof ArrayAccess;
-        $isObject = $container instanceof stdClass;
+        $isObject    = $container instanceof stdClass;
 
         if (!$isContainer && !$isArrayLike && !$isObject) {
             throw $this->_createInvalidArgumentException(
