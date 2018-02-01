@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.1-alpha2] - 2018-01-31
 ### Changed
+- Catering for more exceptional cases, specifically with `ArrayAccess`.
+- Preserving original key in exceptions, where possible and applicable.
 - Improved tests.
 - Fixed code standards.
 - Simplified some code.
