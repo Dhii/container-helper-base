@@ -250,11 +250,11 @@ class NormalizeContainerCapableTraitTest extends TestCase
     }
 
     /**
-     * Tests that `_normalizeContainer()` fails as expected when given an invalid container.
+     * Tests that `_normalizeContainer()` fails as expected when given a string.
      *
      * @since [*next-version*]
      */
-    public function testNormalizeContainerFailureNotFound()
+    public function testNormalizeContainerFailureInvalidArgumentString()
     {
         $container = uniqid('container');
         $exception = $this->createInvalidArgumentException('Invalid container');
