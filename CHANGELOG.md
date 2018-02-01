@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.1-alpha2] - 2018-01-31
 ### Changed
-- Retrieval and checking now support `integer` keys for cases when the container is an array.
-- Types and other documentation fixed.
+- Improved tests.
+- Fixed code standards.
+- Simplified some code.
+- Documentation for types, trows, and other fixed.
 
 ## [0.1-alpha1] - 2018-01-31
 Initial version.
