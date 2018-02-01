@@ -15,7 +15,7 @@ a known container representation. Types include [`ContainerInterface`][Container
 [`NotFoundExceptionInterface`][NotFoundExceptionInterface].
 - [`ContainerHasCapableTrait`][ContainerHasCapableTrait] - Allows checking for values by key from anything that is
 a known container implementation.
-- [`NormalizeContainerCapableTrait`][NormalizeContainerCapableTrait] - Functionality for trait normalization.
+- [`NormalizeContainerCapableTrait`][NormalizeContainerCapableTrait] - Functionality for container normalization.
 
 [Dhii]: https://github.com/Dhii/dhii
 
