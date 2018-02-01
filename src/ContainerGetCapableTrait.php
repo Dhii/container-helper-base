@@ -93,7 +93,7 @@ trait ContainerGetCapableTrait
      * Normalizes a value to its string representation.
      *
      * The values that can be normalized are any scalar values, as well as
-     * {@see StringableInterface).
+     * {@see Stringable).
      *
      * @since [*next-version*]
      *
