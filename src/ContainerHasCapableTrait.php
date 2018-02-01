@@ -31,33 +31,26 @@ trait ContainerHasCapableTrait
      */
     protected function _containerHas($container, $key)
     {
-        $key         = $this->_normalizeString($key);
-        $isContainer = $container instanceof ContainerInterface;
-        $isArrayLike = is_array($container) || $container instanceof ArrayAccess;
-        $isObject    = $container instanceof stdClass;
+        $key = $this->_normalizeString($key);
 
-        if (!$isContainer && !$isArrayLike && !$isObject) {
-            throw $this->_createInvalidArgumentException(
-                $this->__('Argument #1 is not a valid container'),
-                null,
-                null,
-                $container
-            );
+        if ($container instanceof ContainerInterface) {
+            return $container->has($key);
         }
 
-        if ($isContainer && $container->has($key)) {
-            return true;
+        if (is_array($container) || $container instanceof ArrayAccess) {
+            return isset($container[$key]);
         }
 
-        if ($isArrayLike && isset($container[$key])) {
-            return true;
+        if ($container instanceof stdClass) {
+            return property_exists($container, $key);
         }
 
-        if ($isObject && property_exists($container, $key)) {
-            return true;
-        }
-
-        return false;
+        throw $this->_createInvalidArgumentException(
+            $this->__('Argument #1 is not a valid container'),
+            null,
+            null,
+            $container
+        );
     }
 
     /**
