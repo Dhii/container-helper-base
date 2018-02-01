@@ -34,8 +34,8 @@ trait NormalizeContainerCapableTrait
         if (!($container instanceof ContainerInterface) &&
             !($container instanceof stdClass) &&
             !($container instanceof ArrayAccess) &&
-            !is_array($container) &&
-            !is_null($container)) {
+            !is_array($container)
+        ) {
             throw $this->_createInvalidArgumentException(
                 $this->__('Invalid container'),
                 null,
