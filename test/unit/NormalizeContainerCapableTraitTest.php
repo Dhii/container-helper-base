@@ -3,9 +3,10 @@
 namespace Dhii\Data\Container\UnitTest;
 
 use ArrayObject;
-use Dhii\Data\Container\ContainerHasCapableTrait as TestSubject;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
+use Dhii\Data\Container\NormalizeContainerCapableTrait as TestSubject;
+use InvalidArgumentException;
+use Psr\Container\ContainerInterface;
+use stdClass;
 use Xpmock\TestCase;
 use Exception as RootException;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
@@ -16,14 +17,14 @@ use PHPUnit_Framework_MockObject_MockBuilder as MockBuilder;
  *
  * @since [*next-version*]
  */
-class ContainerHasCapableTraitTest extends TestCase
+class NormalizeContainerCapableTraitTest extends TestCase
 {
     /**
      * The class name of the test subject.
      *
      * @since [*next-version*]
      */
-    const TEST_SUBJECT_CLASSNAME = 'Dhii\Data\Container\ContainerHasCapableTrait';
+    const TEST_SUBJECT_CLASSNAME = 'Dhii\Data\Container\NormalizeContainerCapableTrait';
 
     /**
      * Creates a new instance of the test subject.
@@ -77,7 +78,7 @@ class ContainerHasCapableTraitTest extends TestCase
      * @since [*next-version*]
      *
      * @param string $className      Name of the class for the mock to extend.
-     * @param string $interfaceNames Names of the interfaces for the mock to implement.
+     * @param array  $interfaceNames Names of the interfaces for the mock to implement.
      *
      * @return MockBuilder The builder for a mock of an object that extends and implements
      *                     the specified class and interfaces.
@@ -114,41 +115,19 @@ class ContainerHasCapableTraitTest extends TestCase
     }
 
     /**
-     * Creates a new Container exception.
-     *
-     * @since [*next-version*]
-     *
-     * @param string $message The exception message.
-     *
-     * @return MockObject|ContainerExceptionInterface The new exception.
-     */
-    public function createContainerException($message = '')
-    {
-        $mock = $this->mockClassAndInterfaces('Exception', ['Psr\Container\ContainerExceptionInterface'])
-            ->getMockForAbstractClass();
-
-        $mock->method('getMessage')
-            ->will($this->returnValue($message));
-
-        return $mock;
-    }
-
-    /**
      * Creates a new Not Found exception.
      *
      * @since [*next-version*]
      *
      * @param string $message The exception message.
      *
-     * @return MockObject|NotFoundExceptionInterface The new exception.
+     * @return MockObject|RootException|InvalidArgumentException The new exception.
      */
-    public function createNotFoundException($message = '')
+    public function createInvalidArgumentException($message = '')
     {
-        $mock = $this->mockClassAndInterfaces('Exception', ['Psr\Container\NotFoundExceptionInterface'])
+        $mock = $this->getMockBuilder('InvalidArgumentException')
+            ->setConstructorArgs([$message])
             ->getMockForAbstractClass();
-
-        $mock->method('getMessage')
-            ->will($this->returnValue($message));
 
         return $mock;
     }
@@ -176,6 +155,25 @@ class ContainerHasCapableTraitTest extends TestCase
     }
 
     /**
+     * Creates a new `ContainerInterface` instance.
+     *
+     * @since [*next-version*]
+     *
+     * @param array $methods The methods to mock.
+     *
+     * @return MockObject|ContainerInterface
+     */
+    public function createContainer($methods = [])
+    {
+        is_array($methods) && $methods = $this->mergeValues($methods, ['get', 'has']);
+        $mock = $this->getMockBuilder('Psr\Container\ContainerInterface')
+            ->setMethods($methods)
+            ->getMock();
+
+        return $mock;
+    }
+
+    /**
      * Tests whether a valid instance of the test subject can be created.
      *
      * @since [*next-version*]
@@ -192,42 +190,88 @@ class ContainerHasCapableTraitTest extends TestCase
     }
 
     /**
-     * Tests that `_containerGet()` works as expected when given an `ArrayAccess` which throws in `offsetExists()`.
+     * Tests that `_normalizeContainer()` works as expected when given an array.
      *
      * @since [*next-version*]
      */
-    public function testContainerGetArrayAccessFailureOffsetExists()
+    public function testNormalizeContainerArray()
     {
-        $key = uniqid('key');
-        $containerException = $this->createContainerException('Error checking for key');
-        $exception = $this->createException('Problem inside `offsetExists()`');
-        $container = $this->createArrayAccess(['offsetExists']);
-        $subject = $this->createInstance(['_createContainerException', '_normalizeString']);
+        $container = [];
+        $subject = $this->createInstance();
         $_subject = $this->reflect($subject);
 
-        $container->expects($this->exactly(1))
-            ->method('offsetExists')
-            ->with($key)
-            ->will($this->throwException($exception));
+        $result = $_subject->_normalizeContainer($container);
+        $this->assertEquals($container, $result);
+    }
+
+    /**
+     * Tests that `_normalizeContainer()` works as expected when given an `stdClass` object.
+     *
+     * @since [*next-version*]
+     */
+    public function testNormalizeContainerStdClass()
+    {
+        $container = new stdClass();
+        $subject = $this->createInstance();
+        $_subject = $this->reflect($subject);
+
+        $result = $_subject->_normalizeContainer($container);
+        $this->assertEquals($container, $result);
+    }
+
+    /**
+     * Tests that `_normalizeContainer()` works as expected when given an `ArrayAccess` object.
+     *
+     * @since [*next-version*]
+     */
+    public function testNormalizeContainerArrayAccess()
+    {
+        $container = $this->createArrayAccess();
+        $subject = $this->createInstance();
+        $_subject = $this->reflect($subject);
+
+        $result = $_subject->_normalizeContainer($container);
+        $this->assertEquals($container, $result);
+    }
+
+    /**
+     * Tests that `_normalizeContainer()` works as expected when given a `ContainerInterface` object.
+     *
+     * @since [*next-version*]
+     */
+    public function testNormalizeContainerContainer()
+    {
+        $container = $this->createContainer();
+        $subject = $this->createInstance();
+        $_subject = $this->reflect($subject);
+
+        $result = $_subject->_normalizeContainer($container);
+        $this->assertEquals($container, $result);
+    }
+
+    /**
+     * Tests that `_normalizeContainer()` fails as expected when given an invalid container.
+     *
+     * @since [*next-version*]
+     */
+    public function testNormalizeContainerFailureNotFound()
+    {
+        $container = uniqid('container');
+        $exception = $this->createInvalidArgumentException('Invalid container');
+        $subject = $this->createInstance(['_createInvalidArgumentException']);
+        $_subject = $this->reflect($subject);
+
         $subject->expects($this->exactly(1))
-            ->method('_normalizeString')
-            ->with($key)
-            ->will($this->returnArgument(0));
-        $subject->expects($this->exactly(1))
-            ->method('_normalizeContainer')
-            ->with($container)
-            ->will($this->returnArgument(0));
-        $subject->expects($this->exactly(1))
-            ->method('_createContainerException')
+            ->method('_createInvalidArgumentException')
             ->with(
                 $this->isType('string'),
                 null,
-                $exception,
-                null
+                null,
+                $container
             )
-            ->will($this->returnValue($containerException));
+            ->will($this->returnValue($exception));
 
-        $this->setExpectedException('Psr\Container\ContainerExceptionInterface');
-        $_subject->_containerHas($container, $key);
+        $this->setExpectedException('InvalidArgumentException');
+        $_subject->_normalizeContainer($container);
     }
 }

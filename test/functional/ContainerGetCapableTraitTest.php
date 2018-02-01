@@ -2,10 +2,12 @@
 
 namespace Dhii\Data\Container\FuncTest;
 
+use ArrayAccess;
 use ArrayObject;
 use Dhii\Data\Container\ContainerGetCapableTrait as TestSubject;
 use InvalidArgumentException;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use Psr\Container\ContainerInterface;
 use stdClass;
 use Xpmock\TestCase;
 
@@ -48,6 +50,7 @@ class ContainerGetCapableTraitTest extends TestCase
                 '_normalizeString',
                 '_createInvalidArgumentException',
                 '_createNotFoundException',
+                '_normalizeContainer',
             ]
         );
 
@@ -60,11 +63,18 @@ class ContainerGetCapableTraitTest extends TestCase
             ->will($this->returnCallback(function ($subject) {
                 return (string) $subject;
             }));
-        $mock->method('_createInvalidArgumentException')->willReturnCallback(
-            function ($m, $c, $p) {
-                return new InvalidArgumentException($m, $c, $p);
-            }
-        );
+        $mock->method('_normalizeContainer')
+            ->will($this->returnCallback(function ($subject) {
+                if (!($subject instanceof ContainerInterface) &&
+                    !($subject instanceof ArrayAccess) &&
+                    !($subject instanceof stdClass) &&
+                    !is_array($subject)
+                ) {
+                    throw new InvalidArgumentException('Invalid container');
+                }
+
+                return $subject;
+            }));
         $mock->method('_createNotFoundException')->willReturnCallback(
             function ($m, $c, $p) {
                 return $this->mockClassAndInterfaces('Exception', [static::NOT_FOUND_EXCEPTION_FQN]);
