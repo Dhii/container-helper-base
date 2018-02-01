@@ -24,7 +24,7 @@ trait ContainerGetCapableTrait
      * @since [*next-version*]
      *
      * @param array|ArrayAccess|stdClass|ContainerInterface $container The container to read from.
-     * @param string|int|float|bool|Stringable              $key       The key of hte value to retrieve.
+     * @param string|int|float|bool|Stringable              $key       The key of the value to retrieve.
      *
      * @throws ContainerExceptionInterface If an error occurred while reading from the container.
      * @throws NotFoundExceptionInterface  If the key was not found in the container.
