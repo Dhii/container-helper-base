@@ -33,8 +33,9 @@ trait ContainerGetCapableTrait
      */
     protected function _containerGet($container, $key)
     {
-        $origKey = $key;
-        $key     = $this->_normalizeString($key);
+        $container = $this->_normalizeContainer($container);
+        $origKey   = $key;
+        $key       = $this->_normalizeString($key);
         // NotFoundExceptionInterface#getDataKey() returns `string` or `Stringable`,
         // so normalize only other types, and preserve original
         $origKey = is_string($origKey) || $origKey instanceof Stringable
@@ -77,16 +78,12 @@ trait ContainerGetCapableTrait
             return $container[$key];
         }
 
-        if ($container instanceof stdClass) {
-            if (!property_exists($container, $key)) {
-                throw $this->_createNotFoundException($this->__('Key not found'), null, null, null, $origKey);
-            }
-
-            return $container->{$key};
+        // Container is an `stdClass`
+        if (!property_exists($container, $key)) {
+            throw $this->_createNotFoundException($this->__('Key not found'), null, null, null, $origKey);
         }
 
-        // No type matched
-        throw $this->_createInvalidArgumentException($this->__('Invalid container'), null, null, $container);
+        return $container->{$key};
     }
 
     /**
@@ -127,23 +124,19 @@ trait ContainerGetCapableTrait
     );
 
     /**
-     * Creates a new invalid argument exception.
+     * Normalizes a container.
      *
      * @since [*next-version*]
      *
-     * @param string|Stringable|null $message  The error message, if any.
-     * @param int|null               $code     The error code, if any.
-     * @param RootException|null     $previous The inner exception for chaining, if any.
-     * @param mixed|null             $argument The invalid argument, if any.
+     * @param array|ArrayAccess|stdClass|ContainerInterface $container The container to normalize.
      *
-     * @return InvalidArgumentException The new exception.
+     * @throws InvalidArgumentException If the container is invalid.
+     *
+     * @return array|ArrayAccess|stdClass|ContainerInterface Something that can be used with
+     *                                                       {@see ContainerGetCapableTrait#_containerGet()} or
+     *                                                       {@see ContainerHasCapableTrait#_containerHas()}.
      */
-    abstract protected function _createInvalidArgumentException(
-        $message = null,
-        $code = null,
-        RootException $previous = null,
-        $argument = null
-    );
+    abstract protected function _normalizeContainer($container);
 
     /**
      * Creates a new container exception.
