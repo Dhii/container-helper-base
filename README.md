@@ -16,12 +16,15 @@ a known container representation. Types include [`ContainerInterface`][Container
 - [`ContainerHasCapableTrait`][ContainerHasCapableTrait] - Allows checking for values by key from anything that is
 a known container implementation.
 - [`NormalizeContainerCapableTrait`][NormalizeContainerCapableTrait] - Functionality for container normalization.
+- [`NormalizeWritableContainerCapableTrait`][NormalizeWritableContainerCapableTrait] - Functionality for normalizing
+writable containers.
 
 [Dhii]: https://github.com/Dhii/dhii
 
 [ContainerGetCapableTrait]:                 src/ContainerGetCapableTrait.php
 [ContainerHasCapableTrait]:                 src/ContainerHasCapableTrait.php
 [NormalizeContainerCapableTrait]:           src/NormalizeContainerCapableTrait.php
+[NormalizeWritableContainerCapableTrait]:   src/NormalizeWritableContainerCapableTrait.php
 
 [ContainerInterface]:                       https://github.com/php-fig/container/blob/master/src/ContainerInterface.php
 [NotFoundExceptionInterface]:               https://github.com/php-fig/container/blob/master/src/NotFoundExceptionInterface.php
