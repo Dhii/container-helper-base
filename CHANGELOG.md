@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
 
+## [0.1-alpha4] - 2018-02-01
+### Fixed
+- `_normalizeContainer()` used to allow `null` containers.
+
+### Added
+- `NormalizeWritableContainerCapableTrait` for writable container normalization.
+
 ## [0.1-alpha3] - 2018-02-01
 ### Added
 - `NormalizeContainerCapableTrait` for container normalization.
