@@ -2,11 +2,9 @@
 
 namespace Dhii\Data\Container\FuncTest;
 
-use ArrayIterator;
 use ArrayObject;
 use Dhii\Data\Container\ContainerGetCapableTrait as TestSubject;
 use InvalidArgumentException;
-use IteratorIterator;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use stdClass;
 use Xpmock\TestCase;
@@ -60,12 +58,12 @@ class ContainerGetCapableTraitTest extends TestCase
         $mock->method('__')->willReturnArgument(0);
         $mock->method('_normalizeString')->willReturnArgument(0);
         $mock->method('_createInvalidArgumentException')->willReturnCallback(
-            function($m, $c, $p) {
+            function ($m, $c, $p) {
                 return new InvalidArgumentException($m, $c, $p);
             }
         );
         $mock->method('_createNotFoundException')->willReturnCallback(
-            function($m, $c, $p) {
+            function ($m, $c, $p) {
                 return $this->mockClassAndInterfaces('Exception', [static::NOT_FOUND_EXCEPTION_FQN]);
             }
         );
