@@ -304,6 +304,43 @@ class ContainerHasCapableTraitTest extends TestCase
     }
 
     /**
+     * Tests that `_containerHas()` works correctly when using integers to check for numeric string keys in `stdClass` objects`.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerHasIntObject()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $val = uniqid('expected-');
+        $container = new stdClass();
+        $container->{'19'} = $val;
+
+        $result = $reflect->_containerHas($container, 19);
+
+        $this->assertTrue($result, 'Subject failed to detect key');
+    }
+
+    /**
+     * Tests that `_containerGet()` works correctly when using integers to check for numeric string keys in arrays.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerHasIntArray()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $val = uniqid('expected-');
+        $container = ['19' => $val];
+
+        $result = $reflect->_containerHas($container, 19);
+
+        $this->assertTrue($result, 'Subject failed to detect key');
+    }
+
+    /**
      * Tests the `_containerHas()` method with an array to assert whether `false` is returned when the array does not
      * have the given key.
      *

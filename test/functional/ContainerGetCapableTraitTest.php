@@ -325,6 +325,43 @@ class ContainerGetCapableTraitTest extends TestCase
     }
 
     /**
+     * Tests that `_containerGet()` works correctly when using integers to retrieve numeric string keys from `stdClass` objects`.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerGetIntObject()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $expected = uniqid('expected-');
+        $container = new stdClass();
+        $container->{'19'} = $expected;
+
+        $actual = $reflect->_containerGet($container, 19);
+
+        $this->assertEquals($expected, $actual, 'Expected and retrieved values do not match.');
+    }
+
+    /**
+     * Tests that `_containerGet()` works correctly when using integers to retrieve numeric string keys from arrays.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerGetIntArray()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $expected = uniqid('expected-');
+        $container = ['19' => $expected];
+
+        $actual = $reflect->_containerGet($container, 19);
+
+        $this->assertEquals($expected, $actual, 'Expected and retrieved values do not match.');
+    }
+
+    /**
      * Tests the `_containerGet()` method with an array access object to assert whether an exception is thrown when the
      * key is not found.
      *
