@@ -56,7 +56,10 @@ class ContainerGetCapableTraitTest extends TestCase
                      ->getMockForTrait();
 
         $mock->method('__')->willReturnArgument(0);
-        $mock->method('_normalizeString')->willReturnArgument(0);
+        $mock->method('_normalizeString')
+            ->will($this->returnCallback(function ($subject) {
+                return (string) $subject;
+            }));
         $mock->method('_createInvalidArgumentException')->willReturnCallback(
             function ($m, $c, $p) {
                 return new InvalidArgumentException($m, $c, $p);
