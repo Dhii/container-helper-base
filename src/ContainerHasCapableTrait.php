@@ -31,8 +31,7 @@ trait ContainerHasCapableTrait
      */
     protected function _containerHas($container, $key)
     {
-        $strKey = $this->_normalizeString($key);
-        $arrKey = is_int($key) ? $key : $strKey;
+        $key         = $this->_normalizeString($key);
         $isContainer = $container instanceof ContainerInterface;
         $isArrayLike = is_array($container) || $container instanceof ArrayAccess;
         $isObject    = $container instanceof stdClass;
@@ -46,15 +45,15 @@ trait ContainerHasCapableTrait
             );
         }
 
-        if ($isContainer && $container->has($strKey)) {
+        if ($isContainer && $container->has($key)) {
             return true;
         }
 
-        if ($isArrayLike && isset($container[$arrKey])) {
+        if ($isArrayLike && isset($container[$key])) {
             return true;
         }
 
-        if ($isObject && property_exists($container, $strKey)) {
+        if ($isObject && property_exists($container, $key)) {
             return true;
         }
 
