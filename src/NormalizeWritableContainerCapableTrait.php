@@ -5,7 +5,7 @@ namespace Dhii\Data\Container;
 use Dhii\Util\String\StringableInterface as Stringable;
 use ArrayAccess;
 use InvalidArgumentException;
-use Psr\Container\ContainerInterface;
+use Psr\Container\ContainerInterface as BaseContainerInterface;
 use stdClass;
 use Exception as RootException;
 
@@ -31,7 +31,7 @@ trait NormalizeWritableContainerCapableTrait
     {
         $container = $this->_normalizeContainer($container);
 
-        if ($container instanceof ContainerInterface) {
+        if ($container instanceof BaseContainerInterface) {
             throw $this->_createInvalidArgumentException(
                 $this->__('Invalid container'),
                 null,

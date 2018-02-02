@@ -5,7 +5,7 @@ namespace Dhii\Data\Container;
 use Dhii\Util\String\StringableInterface as Stringable;
 use ArrayAccess;
 use InvalidArgumentException;
-use Psr\Container\ContainerInterface;
+use Psr\Container\ContainerInterface as BaseContainerInterface;
 use stdClass;
 use Exception as RootException;
 
@@ -25,13 +25,13 @@ trait NormalizeContainerCapableTrait
      *
      * @throws InvalidArgumentException If the container is invalid.
      *
-     * @return array|ArrayAccess|stdClass|ContainerInterface Something that can be used with
-     *                                                       {@see ContainerGetCapableTrait#_containerGet()} or
-     *                                                       {@see ContainerHasCapableTrait#_containerHas()}.
+     * @return array|ArrayAccess|stdClass|BaseContainerInterface Something that can be used with
+     *                                                           {@see ContainerGetCapableTrait#_containerGet()} or
+     *                                                           {@see ContainerHasCapableTrait#_containerHas()}.
      */
     protected function _normalizeContainer($container)
     {
-        if (!($container instanceof ContainerInterface) &&
+        if (!($container instanceof BaseContainerInterface) &&
             !($container instanceof stdClass) &&
             !($container instanceof ArrayAccess) &&
             !is_array($container)
