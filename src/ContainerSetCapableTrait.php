@@ -33,6 +33,7 @@ trait ContainerSetCapableTrait
 
         if (is_array($container)) {
             foreach ($data as $_k => $_v) {
+                $_k             = $this->_normalizeString($_k);
                 $container[$_k] = $_v;
             }
 
@@ -42,6 +43,7 @@ trait ContainerSetCapableTrait
         if ($container instanceof ArrayAccess) {
             try {
                 foreach ($data as $_k => $_v) {
+                    $_k = $this->_normalizeString($_k);
                     $container->offsetSet($_k, $_v);
                 }
             } catch (RootException $e) {
@@ -53,12 +55,29 @@ trait ContainerSetCapableTrait
 
         if ($container instanceof stdClass) {
             foreach ($data as $_k => $_v) {
+                $_k               = $this->_normalizeString($_k);
                 $container->{$_k} = $_v;
             }
 
             return;
         }
     }
+
+    /**
+     * Normalizes a value to its string representation.
+     *
+     * The values that can be normalized are any scalar values, as well as
+     * {@see Stringable).
+     *
+     * @since [*next-version*]
+     *
+     * @param string|int|float|bool|Stringable $subject The value to normalize to string.
+     *
+     * @throws InvalidArgumentException If the value cannot be normalized.
+     *
+     * @return string The string that resulted from normalization.
+     */
+    abstract protected function _normalizeString($subject);
 
     /**
      * Normalizes an iterable.

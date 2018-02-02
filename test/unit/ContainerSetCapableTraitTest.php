@@ -213,6 +213,10 @@ class ContainerSetCapableTraitTest extends TestCase
             ->method('_normalizeIterable')
             ->with($data)
             ->will($this->returnValue($data));
+        $subject->expects($this->exactly(count($data)))
+            ->method('_normalizeString')
+            ->with($key)
+            ->will($this->returnValue((string) $key));
 
         $reflection = new ReflectionMethod($subject, '_containerSet');
         $reflection->invokeArgs($subject, [&$container, $data]);
@@ -239,6 +243,10 @@ class ContainerSetCapableTraitTest extends TestCase
             ->method('_normalizeIterable')
             ->with($data)
             ->will($this->returnValue($data));
+        $subject->expects($this->exactly(count($data)))
+            ->method('_normalizeString')
+            ->with($key)
+            ->will($this->returnValue((string) $key));
 
         $reflection = new ReflectionMethod($subject, '_containerSet');
         $reflection->invokeArgs($subject, [&$container, $data]);
@@ -264,6 +272,10 @@ class ContainerSetCapableTraitTest extends TestCase
             ->method('_normalizeIterable')
             ->with($data)
             ->will($this->returnValue($data));
+        $subject->expects($this->exactly(count($data)))
+            ->method('_normalizeString')
+            ->with($key)
+            ->will($this->returnValue((string) $key));
 
         $container->expects($this->exactly(count($data)))
             ->method('offsetSet')
@@ -308,6 +320,10 @@ class ContainerSetCapableTraitTest extends TestCase
                 null
             )
             ->will($this->returnValue($exception));
+        $subject->expects($this->exactly(count($data)))
+            ->method('_normalizeString')
+            ->with($key)
+            ->will($this->returnValue((string) $key));
 
         $container->expects($this->exactly(count($data)))
             ->method('offsetSet')
