@@ -7,7 +7,7 @@ use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use InvalidArgumentException;
 use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\ContainerInterface;
+use Psr\Container\ContainerInterface as BaseContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use stdClass;
 
@@ -23,8 +23,8 @@ trait ContainerGetCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param array|ArrayAccess|stdClass|ContainerInterface $container The container to read from.
-     * @param string|int|float|bool|Stringable              $key       The key of the value to retrieve.
+     * @param array|ArrayAccess|stdClass|BaseContainerInterface $container The container to read from.
+     * @param string|int|float|bool|Stringable                  $key       The key of the value to retrieve.
      *
      * @throws ContainerExceptionInterface If an error occurred while reading from the container.
      * @throws NotFoundExceptionInterface  If the key was not found in the container.
@@ -42,7 +42,7 @@ trait ContainerGetCapableTrait
             ? $origKey
             : $key;
 
-        if ($container instanceof ContainerInterface) {
+        if ($container instanceof BaseContainerInterface) {
             try {
                 return $container->get($key);
             } catch (NotFoundExceptionInterface $e) {
@@ -105,11 +105,11 @@ trait ContainerGetCapableTrait
     /**
      * Creates a new not found exception.
      *
-     * @param string|Stringable|null     $message   The exception message, if any.
-     * @param int|string|Stringable|null $code      The numeric exception code, if any.
-     * @param RootException|null         $previous  The inner exception, if any.
-     * @param ContainerInterface|null    $container The associated container, if any.
-     * @param string|Stringable|null     $dataKey   The missing data key, if any.
+     * @param string|Stringable|null      $message   The exception message, if any.
+     * @param int|string|Stringable|null  $code      The numeric exception code, if any.
+     * @param RootException|null          $previous  The inner exception, if any.
+     * @param BaseContainerInterface|null $container The associated container, if any.
+     * @param string|Stringable|null      $dataKey   The missing data key, if any.
      *
      * @since [*next-version*]
      *
@@ -128,23 +128,23 @@ trait ContainerGetCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param array|ArrayAccess|stdClass|ContainerInterface $container The container to normalize.
+     * @param array|ArrayAccess|stdClass|BaseContainerInterface $container The container to normalize.
      *
      * @throws InvalidArgumentException If the container is invalid.
      *
-     * @return array|ArrayAccess|stdClass|ContainerInterface Something that can be used with
-     *                                                       {@see ContainerGetCapableTrait#_containerGet()} or
-     *                                                       {@see ContainerHasCapableTrait#_containerHas()}.
+     * @return array|ArrayAccess|stdClass|BaseContainerInterface Something that can be used with
+     *                                                           {@see ContainerGetCapableTrait#_containerGet()} or
+     *                                                           {@see ContainerHasCapableTrait#_containerHas()}.
      */
     abstract protected function _normalizeContainer($container);
 
     /**
      * Creates a new container exception.
      *
-     * @param string|Stringable|null     $message   The exception message, if any.
-     * @param int|string|Stringable|null $code      The numeric exception code, if any.
-     * @param RootException|null         $previous  The inner exception, if any.
-     * @param ContainerInterface|null    $container The associated container, if any.
+     * @param string|Stringable|null      $message   The exception message, if any.
+     * @param int|string|Stringable|null  $code      The numeric exception code, if any.
+     * @param RootException|null          $previous  The inner exception, if any.
+     * @param BaseContainerInterface|null $container The associated container, if any.
      *
      * @since [*next-version*]
      *
