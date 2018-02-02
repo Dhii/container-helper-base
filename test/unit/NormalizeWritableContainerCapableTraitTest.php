@@ -3,7 +3,7 @@
 namespace Dhii\Data\Container\UnitTest;
 
 use ArrayObject;
-use Dhii\Data\Container\NormalizeContainerCapableTrait as TestSubject;
+use Dhii\Data\Container\NormalizeWritableContainerCapableTrait as TestSubject;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use stdClass;
@@ -17,14 +17,14 @@ use PHPUnit_Framework_MockObject_MockBuilder as MockBuilder;
  *
  * @since [*next-version*]
  */
-class NormalizeContainerCapableTraitTest extends TestCase
+class NormalizeWritableContainerCapableTraitTest extends TestCase
 {
     /**
      * The class name of the test subject.
      *
      * @since [*next-version*]
      */
-    const TEST_SUBJECT_CLASSNAME = 'Dhii\Data\Container\NormalizeContainerCapableTrait';
+    const TEST_SUBJECT_CLASSNAME = 'Dhii\Data\Container\NormalizeWritableContainerCapableTrait';
 
     /**
      * Creates a new instance of the test subject.
@@ -190,7 +190,7 @@ class NormalizeContainerCapableTraitTest extends TestCase
     }
 
     /**
-     * Tests that `_normalizeContainer()` works as expected when given an array.
+     * Tests that `_normalizeWritableContainer()` works as expected when given an array.
      *
      * @since [*next-version*]
      */
@@ -200,104 +200,63 @@ class NormalizeContainerCapableTraitTest extends TestCase
         $subject = $this->createInstance();
         $_subject = $this->reflect($subject);
 
-        $result = $_subject->_normalizeContainer($container);
-        $this->assertEquals($container, $result);
-    }
-
-    /**
-     * Tests that `_normalizeContainer()` works as expected when given an `stdClass` object.
-     *
-     * @since [*next-version*]
-     */
-    public function testNormalizeContainerStdClass()
-    {
-        $container = new stdClass();
-        $subject = $this->createInstance();
-        $_subject = $this->reflect($subject);
+        $subject->expects($this->exactly(1))
+            ->method('_normalizeContainer')
+            ->with($container)
+            ->will($this->returnValue($container));
 
         $result = $_subject->_normalizeContainer($container);
         $this->assertEquals($container, $result);
     }
 
     /**
-     * Tests that `_normalizeContainer()` works as expected when given an `ArrayAccess` object.
+     * Tests that `_normalizeWritableContainer()` fails as expected when given a `ContainerInterface` object.
      *
      * @since [*next-version*]
      */
-    public function testNormalizeContainerArrayAccess()
-    {
-        $container = $this->createArrayAccess();
-        $subject = $this->createInstance();
-        $_subject = $this->reflect($subject);
-
-        $result = $_subject->_normalizeContainer($container);
-        $this->assertEquals($container, $result);
-    }
-
-    /**
-     * Tests that `_normalizeContainer()` works as expected when given a `ContainerInterface` object.
-     *
-     * @since [*next-version*]
-     */
-    public function testNormalizeContainerContainer()
+    public function testNormalizeContainerFailureInvalidArgumentContainer()
     {
         $container = $this->createContainer();
-        $subject = $this->createInstance();
+        $exception = $this->createInvalidArgumentException('Invalid container');
+        $subject = $this->createInstance(['_normalizeContainer', '_createInvalidArgumentException']);
         $_subject = $this->reflect($subject);
 
-        $result = $_subject->_normalizeContainer($container);
-        $this->assertEquals($container, $result);
+        $subject->expects($this->exactly(1))
+            ->method('_normalizeContainer')
+            ->with($container)
+            ->will($this->returnValue($container));
+        $subject->expects($this->exactly(1))
+            ->method('_createInvalidArgumentException')
+            ->with(
+                $this->isType('string'),
+                null,
+                null,
+                $container
+            )
+            ->will($this->returnValue($exception));
+
+        $this->setExpectedException('InvalidArgumentException');
+        $result = $_subject->_normalizeWritableContainer($container);
     }
 
     /**
-     * Tests that `_normalizeContainer()` fails as expected when given a string.
+     * Tests that `_normalizeWritableContainer()` fails as expected when container normalization fails.
      *
      * @since [*next-version*]
      */
-    public function testNormalizeContainerFailureInvalidArgumentString()
+    public function testNormalizeContainerFailureNormalizationFailed()
     {
         $container = uniqid('container');
         $exception = $this->createInvalidArgumentException('Invalid container');
-        $subject = $this->createInstance(['_createInvalidArgumentException']);
+        $subject = $this->createInstance(['_normalizeContainer']);
         $_subject = $this->reflect($subject);
 
         $subject->expects($this->exactly(1))
-            ->method('_createInvalidArgumentException')
-            ->with(
-                $this->isType('string'),
-                null,
-                null,
-                $container
-            )
-            ->will($this->returnValue($exception));
+            ->method('_normalizeContainer')
+            ->with($container)
+            ->will($this->throwException($exception));
 
         $this->setExpectedException('InvalidArgumentException');
-        $_subject->_normalizeContainer($container);
-    }
-
-    /**
-     * Tests that `_normalizeContainer()` fails as expected when given an invalid container.
-     *
-     * @since [*next-version*]
-     */
-    public function testNormalizeContainerFailureInvalidArgumentNull()
-    {
-        $container = null;
-        $exception = $this->createInvalidArgumentException('Invalid container');
-        $subject = $this->createInstance(['_createInvalidArgumentException']);
-        $_subject = $this->reflect($subject);
-
-        $subject->expects($this->exactly(1))
-            ->method('_createInvalidArgumentException')
-            ->with(
-                $this->isType('string'),
-                null,
-                null,
-                $container
-            )
-            ->will($this->returnValue($exception));
-
-        $this->setExpectedException('InvalidArgumentException');
-        $_subject->_normalizeContainer($container);
+        $_subject->_normalizeWritableContainer($container);
     }
 }

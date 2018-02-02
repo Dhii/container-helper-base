@@ -10,12 +10,39 @@ use stdClass;
 use Exception as RootException;
 
 /**
- * Functionality for container normalization.
+ * Functionality for writable container normalization.
  *
  * @since [*next-version*]
  */
-trait NormalizeContainerCapableTrait
+trait NormalizeWritableContainerCapableTrait
 {
+    /**
+     * Normalizes a writable container.
+     *
+     * @since [*next-version*]
+     *
+     * @param array|ArrayAccess|stdClass $container The writable container to normalize.
+     *
+     * @throws InvalidArgumentException If not a valid writable container.
+     *
+     * @return array|ArrayAccess|stdClass A container that can be written to.
+     */
+    protected function _normalizeWritableContainer($container)
+    {
+        $container = $this->_normalizeContainer($container);
+
+        if ($container instanceof ContainerInterface) {
+            throw $this->_createInvalidArgumentException(
+                $this->__('Invalid container'),
+                null,
+                null,
+                $container
+            );
+        }
+
+        return $container;
+    }
+
     /**
      * Normalizes a container.
      *
@@ -29,23 +56,7 @@ trait NormalizeContainerCapableTrait
      *                                                       {@see ContainerGetCapableTrait#_containerGet()} or
      *                                                       {@see ContainerHasCapableTrait#_containerHas()}.
      */
-    protected function _normalizeContainer($container)
-    {
-        if (!($container instanceof ContainerInterface) &&
-            !($container instanceof stdClass) &&
-            !($container instanceof ArrayAccess) &&
-            !is_array($container)
-        ) {
-            throw $this->_createInvalidArgumentException(
-                $this->__('Invalid container'),
-                null,
-                null,
-                $container
-            );
-        }
-
-        return $container;
-    }
+    abstract protected function _normalizeContainer($container);
 
     /**
      * Creates a new invalid argument exception.
