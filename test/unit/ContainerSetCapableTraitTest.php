@@ -4,8 +4,9 @@ namespace Dhii\Data\Container\UnitTest;
 
 use ArrayObject;
 use Dhii\Data\Container\ContainerSetCapableTrait as TestSubject;
+use InvalidArgumentException;
+use OutOfRangeException;
 use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use ReflectionMethod;
 use Xpmock\TestCase;
 use Exception as RootException;
@@ -117,6 +118,42 @@ class ContainerSetCapableTraitTest extends TestCase
     }
 
     /**
+     * Creates a new Not Found exception.
+     *
+     * @since [*next-version*]
+     *
+     * @param string $message The exception message.
+     *
+     * @return MockObject|RootException|InvalidArgumentException The new exception.
+     */
+    public function createInvalidArgumentException($message = '')
+    {
+        $mock = $this->getMockBuilder('InvalidArgumentException')
+            ->setConstructorArgs([$message])
+            ->getMockForAbstractClass();
+
+        return $mock;
+    }
+
+    /**
+     * Creates a new Out of Range exception.
+     *
+     * @since [*next-version*]
+     *
+     * @param string $message The exception message.
+     *
+     * @return MockObject|RootException|OutOfRangeException The new exception.
+     */
+    public function createOutOfRangeException($message = '')
+    {
+        $mock = $this->getMockBuilder('OutOfRangeException')
+            ->setConstructorArgs([$message])
+            ->getMockForAbstractClass();
+
+        return $mock;
+    }
+
+    /**
      * Creates a new Container exception.
      *
      * @since [*next-version*]
@@ -128,26 +165,6 @@ class ContainerSetCapableTraitTest extends TestCase
     public function createContainerException($message = '')
     {
         $mock = $this->mockClassAndInterfaces('Exception', ['Psr\Container\ContainerExceptionInterface'])
-            ->getMockForAbstractClass();
-
-        $mock->method('getMessage')
-            ->will($this->returnValue($message));
-
-        return $mock;
-    }
-
-    /**
-     * Creates a new Not Found exception.
-     *
-     * @since [*next-version*]
-     *
-     * @param string $message The exception message.
-     *
-     * @return MockObject|NotFoundExceptionInterface The new exception.
-     */
-    public function createNotFoundException($message = '')
-    {
-        $mock = $this->mockClassAndInterfaces('Exception', ['Psr\Container\NotFoundExceptionInterface'])
             ->getMockForAbstractClass();
 
         $mock->method('getMessage')
@@ -207,19 +224,16 @@ class ContainerSetCapableTraitTest extends TestCase
         $data = [$key => $val];
         $initialData = [uniqid('key') => uniqid('val')];
         $container = $initialData;
-        $subject = $this->createInstance();
+        $subject = $this->createInstance(['_normalizeKey']);
 
-        $subject->expects($this->exactly(1))
-            ->method('_normalizeIterable')
-            ->with($data)
-            ->will($this->returnValue($data));
         $subject->expects($this->exactly(count($data)))
-            ->method('_normalizeString')
+            ->method('_normalizeKey')
             ->with($key)
             ->will($this->returnValue((string) $key));
 
         $reflection = new ReflectionMethod($subject, '_containerSet');
-        $reflection->invokeArgs($subject, [&$container, $data]);
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($subject, [&$container, $key, $val]);
 
         $this->assertEquals(array_merge($initialData, $data), $container, 'Modified state is wrong');
     }
@@ -236,20 +250,17 @@ class ContainerSetCapableTraitTest extends TestCase
         $data = [$key => $val];
         $initialData = [uniqid('key') => uniqid('val')];
         $container = (object) $initialData;
-        $subject = $this->createInstance();
+        $subject = $this->createInstance(['_normalizeKey']);
         $_subject = $this->reflect($subject);
 
-        $subject->expects($this->exactly(1))
-            ->method('_normalizeIterable')
-            ->with($data)
-            ->will($this->returnValue($data));
         $subject->expects($this->exactly(count($data)))
-            ->method('_normalizeString')
+            ->method('_normalizeKey')
             ->with($key)
             ->will($this->returnValue((string) $key));
 
         $reflection = new ReflectionMethod($subject, '_containerSet');
-        $reflection->invokeArgs($subject, [&$container, $data]);
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($subject, [&$container, $key, $val]);
         $this->assertEquals((object) array_merge($initialData, $data), $container, 'Modified state is wrong');
     }
 
@@ -265,24 +276,21 @@ class ContainerSetCapableTraitTest extends TestCase
         $data = [$key => $val];
         $initialData = [uniqid('key') => uniqid('val')];
         $container = $this->createArrayAccess(['offsetSet'], [$initialData]);
-        $subject = $this->createInstance();
+        $subject = $this->createInstance(['_normalizeKey']);
         $_subject = $this->reflect($subject);
 
         $subject->expects($this->exactly(1))
-            ->method('_normalizeIterable')
-            ->with($data)
-            ->will($this->returnValue($data));
-        $subject->expects($this->exactly(count($data)))
-            ->method('_normalizeString')
+            ->method('_normalizeKey')
             ->with($key)
             ->will($this->returnValue((string) $key));
 
-        $container->expects($this->exactly(count($data)))
+        $container->expects($this->exactly(1))
             ->method('offsetSet')
             ->withConsecutive([$key, $val]);
 
         $reflection = new ReflectionMethod($subject, '_containerSet');
-        $reflection->invokeArgs($subject, [&$container, $data]);
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($subject, [&$container, $key, $val]);
         // Container does not get modified because the method is not proxying to the original, and thus
         // the state of the original container is not modified. However, we can still know that everything is correct
         // because `offsetSet()` is being invoked correctly. Testing of the result can be done in a functional test.
@@ -303,13 +311,13 @@ class ContainerSetCapableTraitTest extends TestCase
         $container = $this->createArrayAccess(['offsetSet'], [$initialData]);
         $innerException = $this->createException('Error in `offsetSet()`');
         $exception = $this->createContainerException('Could not write to container');
-        $subject = $this->createInstance();
+        $subject = $this->createInstance(['_normalizeKey']);
         $_subject = $this->reflect($subject);
 
         $subject->expects($this->exactly(1))
-            ->method('_normalizeIterable')
-            ->with($data)
-            ->will($this->returnValue($data));
+            ->method('_normalizeKey')
+            ->with($key)
+            ->will($this->returnValue((string) $key));
 
         $subject->expects($this->exactly(1))
             ->method('_createContainerException')
@@ -320,10 +328,6 @@ class ContainerSetCapableTraitTest extends TestCase
                 null
             )
             ->will($this->returnValue($exception));
-        $subject->expects($this->exactly(count($data)))
-            ->method('_normalizeString')
-            ->with($key)
-            ->will($this->returnValue((string) $key));
 
         $container->expects($this->exactly(count($data)))
             ->method('offsetSet')
@@ -332,6 +336,64 @@ class ContainerSetCapableTraitTest extends TestCase
 
         $this->setExpectedException('Psr\Container\ContainerExceptionInterface');
         $reflection = new ReflectionMethod($subject, '_containerSet');
-        $reflection->invokeArgs($subject, [&$container, $data]);
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($subject, [&$container, $key, $val]);
+    }
+
+    /**
+     * Tests that `_containerSet()` fails correctly when given an invalid container.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerSetFailureInvalidContainer()
+    {
+        $key = uniqid('key');
+        $val = uniqid('val');
+        $data = [$key, $val];
+        $container = uniqid('container');
+        $exception = $this->createInvalidArgumentException('Invalid container');
+        $subject = $this->createInstance();
+        $_subject = $this->reflect($subject);
+
+        $subject->expects($this->exactly(1))
+            ->method('_createInvalidArgumentException')
+            ->with(
+                $this->isType('string'),
+                null,
+                null,
+                $container
+            )
+            ->will($this->returnValue($exception));
+
+        $this->setExpectedException('InvalidArgumentException');
+        $reflection = new ReflectionMethod($subject, '_containerSet');
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($subject, [&$container, $key, $val]);
+    }
+
+    /**
+     * Tests that `_containerSet()` fails correctly when given an invalid key.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerSetFailureInvalidKey()
+    {
+        $key = uniqid('key');
+        $val = uniqid('val');
+        $data = [$key, $val];
+        $container = $data;
+        $exception = $this->createOutOfRangeException('Invalid key');
+        $subject = $this->createInstance(['_normalizeKey']);
+        $_subject = $this->reflect($subject);
+
+        $subject->expects($this->exactly(1))
+            ->method('_normalizeKey')
+            ->with($key)
+            ->will($this->throwException($exception));
+
+        $this->setExpectedException('OutOfRangeException');
+        $reflection = new ReflectionMethod($subject, '_containerSet');
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($subject, [&$container, $key, $val]);
     }
 }
