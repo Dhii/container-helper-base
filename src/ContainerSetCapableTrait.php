@@ -4,9 +4,9 @@ namespace Dhii\Data\Container;
 
 use ArrayAccess;
 use InvalidArgumentException;
+use OutOfRangeException;
 use Psr\Container\ContainerExceptionInterface;
 use stdClass;
-use Traversable;
 use Exception as RootException;
 use Dhii\Util\String\StringableInterface as Stringable;
 
@@ -22,77 +22,53 @@ trait ContainerSetCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param array|ArrayAccess|stdClass $container The container to set data on.
-     * @param array|Traversable          $data      The data to set on the container.
+     * @param array|ArrayAccess|stdClass       $container The container to set data on.
+     * @param string|int|float|bool|Stringable $key       The key to set the value for.
+     * @param mixed                            $value     The value to set.
      *
+     * @throws InvalidArgumentException    If the container is invalid.
+     * @throws OutOfRangeException         If key is invalid.
      * @throws ContainerExceptionInterface If error occurs while writing to container.
      */
-    public function _containerSet(&$container, $data)
+    protected function _containerSet(&$container, $key, $value)
     {
-        $data = $this->_normalizeIterable($data);
+        $key = $this->_normalizeKey($key);
 
-        if (is_array($container)) {
-            foreach ($data as $_k => $_v) {
-                $_k             = $this->_normalizeString($_k);
-                $container[$_k] = $_v;
+        try {
+            if (is_array($container)) {
+                $container[$key] = $value;
+
+                return;
             }
 
-            return;
-        }
+            if ($container instanceof ArrayAccess) {
+                $container->offsetSet($key, $value);
 
-        if ($container instanceof ArrayAccess) {
-            try {
-                foreach ($data as $_k => $_v) {
-                    $_k = $this->_normalizeString($_k);
-                    $container->offsetSet($_k, $_v);
-                }
-            } catch (RootException $e) {
-                throw $this->_createContainerException($this->__('Could not write to container'), null, $e);
+                return;
             }
 
-            return;
-        }
+            if ($container instanceof stdClass) {
+                $container->{$key} = $value;
 
-        if ($container instanceof stdClass) {
-            foreach ($data as $_k => $_v) {
-                $_k               = $this->_normalizeString($_k);
-                $container->{$_k} = $_v;
+                return;
             }
-
-            return;
+        } catch (RootException $e) {
+            throw $this->_createContainerException($this->__('Could not write to container'), null, $e);
         }
+
+        throw $this->_createInvalidArgumentException($this->__('Not a valid container'), null, null, $container);
     }
 
     /**
-     * Normalizes a value to its string representation.
+     * Normalizes a data key.
      *
-     * The values that can be normalized are any scalar values, as well as
-     * {@see Stringable).
+     * @param string|int|float|bool|Stringable $key The key to normalize.
      *
-     * @since [*next-version*]
+     * @throws OutOfRangeException If key cannot be normalized.
      *
-     * @param string|int|float|bool|Stringable $subject The value to normalize to string.
-     *
-     * @throws InvalidArgumentException If the value cannot be normalized.
-     *
-     * @return string The string that resulted from normalization.
+     * @return string The normalized key.
      */
-    abstract protected function _normalizeString($subject);
-
-    /**
-     * Normalizes an iterable.
-     *
-     * Makes sure that the return value can be iterated over.
-     *
-     * @since [*next-version*]
-     *
-     * @param mixed $iterable The iterable to normalize.
-     *
-     * @throws InvalidArgumentException If the iterable could not be normalized.
-     *
-     * @return array|Traversable|stdClass The normalized iterable.
-     */
-    abstract protected function _normalizeIterable($iterable);
+    abstract protected function _normalizeKey($key);
 
     /**
      * Creates a new container exception.
@@ -111,6 +87,25 @@ trait ContainerSetCapableTrait
         $code = null,
         RootException $previous = null,
         ContainerInterface $container = null
+    );
+
+    /**
+     * Creates a new invalid argument exception.
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable|null $message  The error message, if any.
+     * @param int|null               $code     The error code, if any.
+     * @param RootException|null     $previous The inner exception for chaining, if any.
+     * @param mixed|null             $argument The invalid argument, if any.
+     *
+     * @return InvalidArgumentException The new exception.
+     */
+    abstract protected function _createInvalidArgumentException(
+        $message = null,
+        $code = null,
+        RootException $previous = null,
+        $argument = null
     );
 
     /**
