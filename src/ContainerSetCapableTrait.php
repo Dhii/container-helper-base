@@ -6,6 +6,7 @@ use ArrayAccess;
 use InvalidArgumentException;
 use OutOfRangeException;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface as BaseContainerInterface;
 use stdClass;
 use Exception as RootException;
 use Dhii\Util\String\StringableInterface as Stringable;
@@ -76,7 +77,7 @@ trait ContainerSetCapableTrait
      * @param string|Stringable|null     $message   The exception message, if any.
      * @param int|string|Stringable|null $code      The numeric exception code, if any.
      * @param RootException|null         $previous  The inner exception, if any.
-     * @param ContainerInterface|null    $container The associated container, if any.
+     * @param BaseContainerInterface|null    $container The associated container, if any.
      *
      * @since [*next-version*]
      *
@@ -86,7 +87,7 @@ trait ContainerSetCapableTrait
         $message = null,
         $code = null,
         RootException $previous = null,
-        ContainerInterface $container = null
+        BaseContainerInterface $container = null
     );
 
     /**

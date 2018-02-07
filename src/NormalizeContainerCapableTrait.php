@@ -21,7 +21,7 @@ trait NormalizeContainerCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param array|ArrayAccess|stdClass|ContainerInterface $container The container to normalize.
+     * @param array|ArrayAccess|stdClass|BaseContainerInterface $container The container to normalize.
      *
      * @throws InvalidArgumentException If the container is invalid.
      *

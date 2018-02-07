@@ -48,11 +48,11 @@ trait NormalizeWritableContainerCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param array|ArrayAccess|stdClass|ContainerInterface $container The container to normalize.
+     * @param array|ArrayAccess|stdClass|BaseContainerInterface $container The container to normalize.
      *
      * @throws InvalidArgumentException If the container is invalid.
      *
-     * @return array|ArrayAccess|stdClass|ContainerInterface Something that can be used with
+     * @return array|ArrayAccess|stdClass|BaseContainerInterface Something that can be used with
      *                                                       {@see ContainerGetCapableTrait#_containerGet()} or
      *                                                       {@see ContainerHasCapableTrait#_containerHas()}.
      */
