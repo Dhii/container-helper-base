@@ -34,8 +34,8 @@ trait ContainerGetCapableTrait
      */
     protected function _containerGet($container, $key)
     {
-        $origKey   = $key;
-        $key       = $this->_normalizeString($key);
+        $origKey = $key;
+        $key     = $this->_normalizeKey($key);
         // NotFoundExceptionInterface#getDataKey() returns `string` or `Stringable`,
         // so normalize only other types, and preserve original
         $origKey = is_string($origKey) || $origKey instanceof Stringable
@@ -91,20 +91,17 @@ trait ContainerGetCapableTrait
     }
 
     /**
-     * Normalizes a value to its string representation.
+     * Normalizes a key.
      *
-     * The values that can be normalized are any scalar values, as well as
-     * {@see Stringable).
+     * Treats it as one of many keys, throwing a more appropriate exception.
      *
-     * @since [*next-version*]
+     * @param string|int|float|bool|Stringable $key The key to normalize.
      *
-     * @param string|int|float|bool|Stringable $subject The value to normalize to string.
+     * @throws OutOfRangeException If key cannot be normalized.
      *
-     * @throws InvalidArgumentException If the value cannot be normalized.
-     *
-     * @return string The string that resulted from normalization.
+     * @return string The normalized key.
      */
-    abstract protected function _normalizeString($subject);
+    abstract protected function _normalizeKey($key);
 
     /**
      * Creates a new not found exception.
