@@ -47,7 +47,7 @@ class ContainerGetCapableTraitTest extends TestCase
             $methods,
             [
                 '__',
-                '_normalizeString',
+                '_normalizeKey',
                 '_createInvalidArgumentException',
                 '_createNotFoundException',
                 '_normalizeContainer',
@@ -59,7 +59,7 @@ class ContainerGetCapableTraitTest extends TestCase
                      ->getMockForTrait();
 
         $mock->method('__')->willReturnArgument(0);
-        $mock->method('_normalizeString')
+        $mock->method('_normalizeKey')
             ->will($this->returnCallback(function ($subject) {
                 return (string) $subject;
             }));

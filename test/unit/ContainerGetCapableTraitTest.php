@@ -248,7 +248,7 @@ class ContainerGetCapableTraitTest extends TestCase
         $containerException = $this->createContainerException('Error checking for key');
         $exception = $this->createException('Problem inside `offsetExists()`');
         $container = $this->createArrayAccess(['offsetExists']);
-        $subject = $this->createInstance(['_createContainerException', '_normalizeString']);
+        $subject = $this->createInstance(['_createContainerException', '_normalizeKey']);
         $_subject = $this->reflect($subject);
 
         $container->expects($this->exactly(1))
@@ -256,7 +256,7 @@ class ContainerGetCapableTraitTest extends TestCase
             ->with($key)
             ->will($this->throwException($exception));
         $subject->expects($this->exactly(1))
-            ->method('_normalizeString')
+            ->method('_normalizeKey')
             ->with($key)
             ->will($this->returnArgument(0));
         $subject->expects($this->exactly(1))
@@ -279,7 +279,7 @@ class ContainerGetCapableTraitTest extends TestCase
         $containerException = $this->createContainerException('Error checking for key');
         $exception = $this->createException('Problem inside `offsetGet()`');
         $container = $this->createArrayAccess(['offsetGet'], [[$key => uniqid('val')]]);
-        $subject = $this->createInstance(['_createContainerException', '_normalizeString']);
+        $subject = $this->createInstance(['_createContainerException', '_normalizeKey']);
         $_subject = $this->reflect($subject);
 
         $container->expects($this->exactly(1))
@@ -287,7 +287,7 @@ class ContainerGetCapableTraitTest extends TestCase
             ->with($key)
             ->will($this->throwException($exception));
         $subject->expects($this->exactly(1))
-            ->method('_normalizeString')
+            ->method('_normalizeKey')
             ->with($key)
             ->will($this->returnArgument(0));
         $subject->expects($this->exactly(1))
