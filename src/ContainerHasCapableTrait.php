@@ -6,6 +6,7 @@ use ArrayAccess;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use InvalidArgumentException;
+use OutOfRangeException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface as BaseContainerInterface;
 use stdClass;
@@ -26,6 +27,7 @@ trait ContainerHasCapableTrait
      * @param string|int|float|bool|Stringable                  $key       The key of the value to retrieve.
      *
      * @throws ContainerExceptionInterface If an error occurred while reading from the container.
+     * @throws OutOfRangeException         If the container or the key is invalid.
      *
      * @return bool True if the container has an entry for the given key, false if not.
      */
