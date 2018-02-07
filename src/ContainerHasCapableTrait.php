@@ -31,7 +31,6 @@ trait ContainerHasCapableTrait
      */
     protected function _containerHas($container, $key)
     {
-        $container = $this->_normalizeContainer($container);
         $key = $this->_normalizeKey($key);
 
         if ($container instanceof BaseContainerInterface) {
@@ -51,8 +50,11 @@ trait ContainerHasCapableTrait
             return isset($container[$key]);
         }
 
-        // Container is an `stdClass`
-        return property_exists($container, $key);
+        if ($container instanceof stdClass) {
+            return property_exists($container, $key);
+        }
+
+        throw $this->_createInvalidArgumentException($this->__('Not a valid container'), null, null, $container);
     }
 
     /**
@@ -67,21 +69,6 @@ trait ContainerHasCapableTrait
      * @return string The normalized key.
      */
     abstract protected function _normalizeKey($key);
-
-    /**
-     * Normalizes a container.
-     *
-     * @since [*next-version*]
-     *
-     * @param array|ArrayAccess|stdClass|BaseContainerInterface $container The container to normalize.
-     *
-     * @throws InvalidArgumentException If the container is invalid.
-     *
-     * @return array|ArrayAccess|stdClass|BaseContainerInterface Something that can be used with
-     *                                                           {@see ContainerGetCapableTrait#_containerGet()} or
-     *                                                           {@see ContainerHasCapableTrait#_containerHas()}.
-     */
-    abstract protected function _normalizeContainer($container);
 
     /**
      * Creates a new container exception.
