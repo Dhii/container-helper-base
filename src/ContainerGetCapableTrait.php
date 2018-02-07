@@ -26,6 +26,7 @@ trait ContainerGetCapableTrait
      * @param array|ArrayAccess|stdClass|BaseContainerInterface $container The container to read from.
      * @param string|int|float|bool|Stringable                  $key       The key of the value to retrieve.
      *
+     * @throws InvalidArgumentException    If container is invalid.
      * @throws ContainerExceptionInterface If an error occurred while reading from the container.
      * @throws NotFoundExceptionInterface  If the key was not found in the container.
      *
