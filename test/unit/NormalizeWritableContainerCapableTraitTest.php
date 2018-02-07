@@ -204,7 +204,7 @@ class NormalizeWritableContainerCapableTraitTest extends TestCase
             ->with($container)
             ->will($this->returnValue($container));
 
-        $result = $_subject->_normalizeContainer($container);
+        $result = $_subject->_normalizeWritableContainer($container);
         $this->assertEquals($container, $result);
     }
 
