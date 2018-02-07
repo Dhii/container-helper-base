@@ -4,6 +4,7 @@ namespace Dhii\Data\Container\UnitTest;
 
 use ArrayObject;
 use Dhii\Data\Container\ContainerUnsetCapableTrait as TestSubject;
+use InvalidArgumentException;
 use OutOfRangeException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
