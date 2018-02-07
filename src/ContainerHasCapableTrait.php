@@ -32,7 +32,7 @@ trait ContainerHasCapableTrait
     protected function _containerHas($container, $key)
     {
         $container = $this->_normalizeContainer($container);
-        $key       = $this->_normalizeString($key);
+        $key = $this->_normalizeKey($key);
 
         if ($container instanceof BaseContainerInterface) {
             return $container->has($key);
@@ -56,20 +56,17 @@ trait ContainerHasCapableTrait
     }
 
     /**
-     * Normalizes a value to its string representation.
+     * Normalizes a key.
      *
-     * The values that can be normalized are any scalar values, as well as
-     * {@see StringableInterface).
+     * Treats it as one of many keys, throwing a more appropriate exception.
      *
-     * @since [*next-version*]
+     * @param string|int|float|bool|Stringable $key The key to normalize.
      *
-     * @param string|int|float|bool|Stringable $subject The value to normalize to string.
+     * @throws OutOfRangeException If key cannot be normalized.
      *
-     * @throws InvalidArgumentException If the value cannot be normalized.
-     *
-     * @return string The string that resulted from normalization.
+     * @return string The normalized key.
      */
-    abstract protected function _normalizeString($subject);
+    abstract protected function _normalizeKey($key);
 
     /**
      * Normalizes a container.
