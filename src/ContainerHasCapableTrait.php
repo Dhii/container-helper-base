@@ -41,7 +41,7 @@ trait ContainerHasCapableTrait
         if ($container instanceof ArrayAccess) {
             // Catching exceptions thrown by `offsetExists()`
             try {
-                return isset($container[$key]);
+                return $container->offsetExists($key);
             } catch (RootException $e) {
                 throw $this->_createContainerException($this->__('Could not check for key "%1$s"', [$key]), null, $e, null);
             }
