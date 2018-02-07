@@ -33,7 +33,6 @@ trait ContainerGetCapableTrait
      */
     protected function _containerGet($container, $key)
     {
-        $container = $this->_normalizeContainer($container);
         $origKey   = $key;
         $key       = $this->_normalizeString($key);
         // NotFoundExceptionInterface#getDataKey() returns `string` or `Stringable`,
@@ -78,12 +77,16 @@ trait ContainerGetCapableTrait
             return $container[$key];
         }
 
-        // Container is an `stdClass`
-        if (!property_exists($container, $key)) {
-            throw $this->_createNotFoundException($this->__('Key not found'), null, null, null, $origKey);
+        if ($container instanceof stdClass) {
+            // Container is an `stdClass`
+            if (!property_exists($container, $key)) {
+                throw $this->_createNotFoundException($this->__('Key not found'), null, null, null, $origKey);
+            }
+
+            return $container->{$key};
         }
 
-        return $container->{$key};
+        throw $this->_createInvalidArgumentException($this->__('Not a valid container'), null, null, $container);
     }
 
     /**
@@ -124,21 +127,6 @@ trait ContainerGetCapableTrait
     );
 
     /**
-     * Normalizes a container.
-     *
-     * @since [*next-version*]
-     *
-     * @param array|ArrayAccess|stdClass|BaseContainerInterface $container The container to normalize.
-     *
-     * @throws InvalidArgumentException If the container is invalid.
-     *
-     * @return array|ArrayAccess|stdClass|BaseContainerInterface Something that can be used with
-     *                                                           {@see ContainerGetCapableTrait#_containerGet()} or
-     *                                                           {@see ContainerHasCapableTrait#_containerHas()}.
-     */
-    abstract protected function _normalizeContainer($container);
-
-    /**
      * Creates a new container exception.
      *
      * @param string|Stringable|null      $message   The exception message, if any.
@@ -155,6 +143,25 @@ trait ContainerGetCapableTrait
         $code = null,
         RootException $previous = null,
         ContainerInterface $container = null
+    );
+
+    /**
+     * Creates a new Invalid Argument exception.
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable|null $message  The error message, if any.
+     * @param int|null               $code     The error code, if any.
+     * @param RootException|null     $previous The inner exception for chaining, if any.
+     * @param mixed|null             $argument The invalid argument, if any.
+     *
+     * @return InvalidArgumentException The new exception.
+     */
+    abstract protected function _createInvalidArgumentException(
+        $message = null,
+        $code = null,
+        RootException $previous = null,
+        $argument = null
     );
 
     /**
