@@ -210,7 +210,7 @@ class ContainerHasCapableTraitTest extends TestCase
             ->with($key)
             ->will($this->throwException($exception));
         $subject->expects($this->exactly(1))
-            ->method('_normalizeString')
+            ->method('_normalizeKey')
             ->with($key)
             ->will($this->returnArgument(0));
         $subject->expects($this->exactly(1))
