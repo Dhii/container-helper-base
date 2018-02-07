@@ -4,6 +4,7 @@ namespace Dhii\Data\Container\UnitTest;
 
 use ArrayObject;
 use Dhii\Data\Container\ContainerGetCapableTrait as TestSubject;
+use InvalidArgumentException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Xpmock\TestCase;
@@ -154,6 +155,24 @@ class ContainerGetCapableTraitTest extends TestCase
     }
 
     /**
+     * Creates a new Not Found exception.
+     *
+     * @since [*next-version*]
+     *
+     * @param string $message The exception message.
+     *
+     * @return MockObject|RootException|InvalidArgumentException The new exception.
+     */
+    public function createInvalidArgumentException($message = '')
+    {
+        $mock = $this->getMockBuilder('InvalidArgumentException')
+            ->setConstructorArgs([$message])
+            ->getMockForAbstractClass();
+
+        return $mock;
+    }
+
+    /**
      * Creates a new `ArrayAccess` instance.
      *
      * @since [*next-version*]
@@ -192,6 +211,33 @@ class ContainerGetCapableTraitTest extends TestCase
     }
 
     /**
+     * Tests that `_containerGet()` fails correctly when given an invalid container.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerGetFailureInvalidContainer()
+    {
+        $key = uniqid('key');
+        $container = uniqid('container');
+        $exception = $this->createInvalidArgumentException('Invalid container');
+        $subject = $this->createInstance();
+        $_subject = $this->reflect($subject);
+
+        $subject->expects($this->exactly(1))
+            ->method('_createInvalidArgumentException')
+            ->with(
+                $this->isType('string'),
+                null,
+                null,
+                $container
+            )
+            ->will($this->returnValue($exception));
+
+        $this->setExpectedException('InvalidArgumentException');
+        $_subject->_containerGet($container, $key);
+    }
+
+    /**
      * Tests that `_containerGet()` works as expected when given an `ArrayAccess` which throws in `offsetExists()`.
      *
      * @since [*next-version*]
@@ -212,10 +258,6 @@ class ContainerGetCapableTraitTest extends TestCase
         $subject->expects($this->exactly(1))
             ->method('_normalizeString')
             ->with($key)
-            ->will($this->returnArgument(0));
-        $subject->expects($this->exactly(1))
-            ->method('_normalizeContainer')
-            ->with($container)
             ->will($this->returnArgument(0));
         $subject->expects($this->exactly(1))
             ->method('_createContainerException')
@@ -247,10 +289,6 @@ class ContainerGetCapableTraitTest extends TestCase
         $subject->expects($this->exactly(1))
             ->method('_normalizeString')
             ->with($key)
-            ->will($this->returnArgument(0));
-        $subject->expects($this->exactly(1))
-            ->method('_normalizeContainer')
-            ->with($container)
             ->will($this->returnArgument(0));
         $subject->expects($this->exactly(1))
             ->method('_createContainerException')

@@ -391,34 +391,4 @@ class ContainerGetCapableTraitTest extends TestCase
 
         $reflect->_containerGet($container, $wrongKey);
     }
-
-    /**
-     * Tests the `_containerGet()` method with an invalid argument to assert whether an exception is thrown.
-     *
-     * @since [*next-version*]
-     */
-    public function testContainerGetInvalidArgument()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-
-        $this->setExpectedException('InvalidArgumentException');
-
-        $reflect->_containerGet(uniqid('scalar-'), uniqid('key-'));
-    }
-
-    /**
-     * Tests the `_containerGet()` method with a null argument to assert whether an exception is thrown.
-     *
-     * @since [*next-version*]
-     */
-    public function testContainerGetNullArgument()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-
-        $this->setExpectedException('InvalidArgumentException');
-
-        $reflect->_containerGet(null, uniqid('key-'));
-    }
 }
