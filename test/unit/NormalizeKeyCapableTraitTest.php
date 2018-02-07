@@ -185,7 +185,7 @@ class NormalizeKeyCapableTraitTest extends TestCase
     }
 
     /**
-     * Tests that `_normalizeKey()` works as expected.
+     * Tests that `_normalizeKey()` fails as expected when key is invalid.
      *
      * @since [*next-version*]
      */
