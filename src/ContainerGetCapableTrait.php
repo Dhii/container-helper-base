@@ -53,7 +53,7 @@ trait ContainerGetCapableTrait
         if ($container instanceof ArrayAccess) {
             // Catching exceptions thrown by `offsetExists()`
             try {
-                $hasKey = isset($container[$key]);
+                $hasKey = $container->offsetExists($key);
             } catch (RootException $e) {
                 throw $this->_createContainerException($this->__('Could not check for key "%1$s"', [$key]), null, $e, null);
             }
@@ -64,7 +64,7 @@ trait ContainerGetCapableTrait
 
             // Catching exceptions thrown by `offsetGet()`
             try {
-                return $container[$key];
+                return $container->offsetGet($key);
             } catch (RootException $e) {
                 throw $this->_createContainerException($this->__('Could not retrieve value'), null, $e, null);
             }
