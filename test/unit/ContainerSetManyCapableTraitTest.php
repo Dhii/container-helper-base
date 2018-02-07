@@ -250,8 +250,7 @@ class ContainerSetManyCapableTraitTest extends TestCase
         $key = uniqid('key');
         $val = uniqid('val');
         $data = [$key => $val];
-        $initialData = [uniqid('key') => uniqid('val')];
-        $container = $this->createArrayAccess($initialData);
+        $container = $this->createArrayAccess();
         $exception = $this->createInvalidArgumentException('Invalid data set');
         $subject = $this->createInstance(['_normalizeIterable']);
         $_subject = $this->reflect($subject);
@@ -277,8 +276,7 @@ class ContainerSetManyCapableTraitTest extends TestCase
         $key = uniqid('key');
         $val = uniqid('val');
         $data = [$key => $val];
-        $initialData = [uniqid('key') => uniqid('val')];
-        $container = $this->createArrayAccess($initialData);
+        $container = $this->createArrayAccess();
         $exception = $this->createInvalidArgumentException('Invalid container');
         $subject = $this->createInstance(['_containerSet']);
         $_subject = $this->reflect($subject);
@@ -287,7 +285,7 @@ class ContainerSetManyCapableTraitTest extends TestCase
             ->method('_normalizeIterable')
             ->with($data)
             ->will($this->returnValue($data));
-        $subject->expects($this->exactly(count($data)))
+        $subject->expects($this->exactly(1))
             ->method('_containerSet')
             ->with($container, $key, $val)
             ->will($this->throwException($exception));
@@ -308,8 +306,7 @@ class ContainerSetManyCapableTraitTest extends TestCase
         $key = uniqid('key');
         $val = uniqid('val');
         $data = [$key => $val];
-        $initialData = [uniqid('key') => uniqid('val')];
-        $container = $this->createArrayAccess($initialData);
+        $container = $this->createArrayAccess();
         $exception = $this->createOutOfRangeException('Invalid key');
         $subject = $this->createInstance(['_containerSet']);
         $_subject = $this->reflect($subject);
@@ -318,7 +315,7 @@ class ContainerSetManyCapableTraitTest extends TestCase
             ->method('_normalizeIterable')
             ->with($data)
             ->will($this->returnValue($data));
-        $subject->expects($this->exactly(count($data)))
+        $subject->expects($this->exactly(1))
             ->method('_containerSet')
             ->with($container, $key, $val)
             ->will($this->throwException($exception));
