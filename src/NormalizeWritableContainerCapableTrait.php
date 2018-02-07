@@ -53,8 +53,8 @@ trait NormalizeWritableContainerCapableTrait
      * @throws InvalidArgumentException If the container is invalid.
      *
      * @return array|ArrayAccess|stdClass|BaseContainerInterface Something that can be used with
-     *                                                       {@see ContainerGetCapableTrait#_containerGet()} or
-     *                                                       {@see ContainerHasCapableTrait#_containerHas()}.
+     *                                                           {@see ContainerGetCapableTrait#_containerGet()} or
+     *                                                           {@see ContainerHasCapableTrait#_containerHas()}.
      */
     abstract protected function _normalizeContainer($container);
 
