@@ -121,7 +121,7 @@ trait ContainerGetCapableTrait
         $message = null,
         $code = null,
         RootException $previous = null,
-        ContainerInterface $container = null,
+        BaseContainerInterface $container = null,
         $dataKey = null
     );
 
