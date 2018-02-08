@@ -2,10 +2,9 @@
 
 namespace Dhii\Data\Container\UnitTest;
 
-use ArrayObject;
-use Dhii\Data\Container\ContainerHasCapableTrait as TestSubject;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
+use Dhii\Data\Container\NormalizeKeyCapableTrait as TestSubject;
+use InvalidArgumentException;
+use OutOfRangeException;
 use Xpmock\TestCase;
 use Exception as RootException;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
@@ -16,14 +15,14 @@ use PHPUnit_Framework_MockObject_MockBuilder as MockBuilder;
  *
  * @since [*next-version*]
  */
-class ContainerHasCapableTraitTest extends TestCase
+class NormalizeKeyCapableTraitTest extends TestCase
 {
     /**
      * The class name of the test subject.
      *
      * @since [*next-version*]
      */
-    const TEST_SUBJECT_CLASSNAME = 'Dhii\Data\Container\ContainerHasCapableTrait';
+    const TEST_SUBJECT_CLASSNAME = 'Dhii\Data\Container\NormalizeKeyCapableTrait';
 
     /**
      * Creates a new instance of the test subject.
@@ -92,7 +91,7 @@ class ContainerHasCapableTraitTest extends TestCase
         ]);
         eval($definition);
 
-        return $this->getMockBuilder($paddingClassName);
+        return $this->getMockForAbstractClass($paddingClassName);
     }
 
     /**
@@ -114,63 +113,37 @@ class ContainerHasCapableTraitTest extends TestCase
     }
 
     /**
-     * Creates a new Container exception.
+     * Creates a new Invalid Argument exception.
      *
      * @since [*next-version*]
      *
      * @param string $message The exception message.
      *
-     * @return MockObject|ContainerExceptionInterface The new exception.
+     * @return MockObject|RootException|InvalidArgumentException The new exception.
      */
-    public function createContainerException($message = '')
+    public function createInvalidArgumentException($message = '')
     {
-        $mock = $this->mockClassAndInterfaces('Exception', ['Psr\Container\ContainerExceptionInterface'])
-            ->getMockForAbstractClass();
-
-        $mock->method('getMessage')
-            ->will($this->returnValue($message));
-
-        return $mock;
-    }
-
-    /**
-     * Creates a new Not Found exception.
-     *
-     * @since [*next-version*]
-     *
-     * @param string $message The exception message.
-     *
-     * @return MockObject|NotFoundExceptionInterface The new exception.
-     */
-    public function createNotFoundException($message = '')
-    {
-        $mock = $this->mockClassAndInterfaces('Exception', ['Psr\Container\NotFoundExceptionInterface'])
-            ->getMockForAbstractClass();
-
-        $mock->method('getMessage')
-            ->will($this->returnValue($message));
-
-        return $mock;
-    }
-
-    /**
-     * Creates a new `ArrayAccess` instance.
-     *
-     * @since [*next-version*]
-     *
-     * @param array $methods The methods to mock.
-     * @param array $data    The data for array access.
-     *
-     * @return MockObject|ArrayObject
-     */
-    public function createArrayAccess($methods = [], $data = [])
-    {
-        is_array($methods) && $methods = $this->mergeValues($methods, []);
-
-        $mock = $this->getMockBuilder('ArrayObject')
-            ->setMethods($methods)
-            ->setConstructorArgs($data)
+        $mock = $this->getMockBuilder('InvalidArgumentException')
+            ->setConstructorArgs([$message])
             ->getMock();
+
+        return $mock;
+    }
+
+    /**
+     * Creates a new Out of Range exception.
+     *
+     * @since [*next-version*]
+     *
+     * @param string $message The exception message.
+     *
+     * @return MockObject|RootException|OutOfRangeException The new exception.
+     */
+    public function createOutOfRangeException($message = '')
+    {
+        $mock = $this->getMockBuilder('OutOfRangeException')
+            ->setConstructorArgs([$message])
+            ->getMockForAbstractClass();
 
         return $mock;
     }
@@ -192,38 +165,53 @@ class ContainerHasCapableTraitTest extends TestCase
     }
 
     /**
-     * Tests that `_containerGet()` works as expected when given an `ArrayAccess` which throws in `offsetExists()`.
+     * Tests that `_normalizeKey()` works as expected.
      *
      * @since [*next-version*]
      */
-    public function testContainerGetArrayAccessFailureOffsetExists()
+    public function testNormalizeKey()
     {
         $key = uniqid('key');
-        $containerException = $this->createContainerException('Error checking for key');
-        $exception = $this->createException('Problem inside `offsetExists()`');
-        $container = $this->createArrayAccess(['offsetExists']);
-        $subject = $this->createInstance(['_createContainerException', '_normalizeString']);
+        $subject = $this->createInstance(['_normalizeString']);
         $_subject = $this->reflect($subject);
 
-        $container->expects($this->exactly(1))
-            ->method('offsetExists')
-            ->with($key)
-            ->will($this->throwException($exception));
         $subject->expects($this->exactly(1))
-            ->method('_normalizeKey')
+            ->method('_normalizeString')
             ->with($key)
-            ->will($this->returnArgument(0));
+            ->will($this->returnValue($key));
+
+        $result = $_subject->_normalizeKey($key);
+        $this->assertEquals($key, $result, 'Normalized key is wrong');
+    }
+
+    /**
+     * Tests that `_normalizeKey()` fails as expected when key is invalid.
+     *
+     * @since [*next-version*]
+     */
+    public function testNormalizeKeyFailureInvalidKey()
+    {
+        $key = uniqid('key');
+        $innerException = $this->createInvalidArgumentException('Could not normalize to string');
+        $exception = $this->createOutOfRangeException('Invalid key');
+        $subject = $this->createInstance(['_normalizeString', '_createOutOfRangeException']);
+        $_subject = $this->reflect($subject);
+
         $subject->expects($this->exactly(1))
-            ->method('_createContainerException')
+            ->method('_normalizeString')
+            ->with($key)
+            ->will($this->throwException($innerException));
+        $subject->expects($this->exactly(1))
+            ->method('_createOutOfRangeException')
             ->with(
                 $this->isType('string'),
                 null,
-                $exception,
-                null
+                $innerException,
+                $key
             )
-            ->will($this->returnValue($containerException));
+            ->will($this->returnValue($exception));
 
-        $this->setExpectedException('Psr\Container\ContainerExceptionInterface');
-        $_subject->_containerHas($container, $key);
+        $this->setExpectedException('OutOfRangeException');
+        $result = $_subject->_normalizeKey($key);
     }
 }

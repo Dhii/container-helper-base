@@ -6,7 +6,6 @@ use ArrayObject;
 use Dhii\Data\Container\NormalizeWritableContainerCapableTrait as TestSubject;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
-use stdClass;
 use Xpmock\TestCase;
 use Exception as RootException;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
@@ -205,7 +204,7 @@ class NormalizeWritableContainerCapableTraitTest extends TestCase
             ->with($container)
             ->will($this->returnValue($container));
 
-        $result = $_subject->_normalizeContainer($container);
+        $result = $_subject->_normalizeWritableContainer($container);
         $this->assertEquals($container, $result);
     }
 

@@ -47,7 +47,7 @@ class ContainerGetCapableTraitTest extends TestCase
             $methods,
             [
                 '__',
-                '_normalizeString',
+                '_normalizeKey',
                 '_createInvalidArgumentException',
                 '_createNotFoundException',
                 '_normalizeContainer',
@@ -59,7 +59,7 @@ class ContainerGetCapableTraitTest extends TestCase
                      ->getMockForTrait();
 
         $mock->method('__')->willReturnArgument(0);
-        $mock->method('_normalizeString')
+        $mock->method('_normalizeKey')
             ->will($this->returnCallback(function ($subject) {
                 return (string) $subject;
             }));
@@ -390,35 +390,5 @@ class ContainerGetCapableTraitTest extends TestCase
         $this->setExpectedException(static::NOT_FOUND_EXCEPTION_FQN);
 
         $reflect->_containerGet($container, $wrongKey);
-    }
-
-    /**
-     * Tests the `_containerGet()` method with an invalid argument to assert whether an exception is thrown.
-     *
-     * @since [*next-version*]
-     */
-    public function testContainerGetInvalidArgument()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-
-        $this->setExpectedException('InvalidArgumentException');
-
-        $reflect->_containerGet(uniqid('scalar-'), uniqid('key-'));
-    }
-
-    /**
-     * Tests the `_containerGet()` method with a null argument to assert whether an exception is thrown.
-     *
-     * @since [*next-version*]
-     */
-    public function testContainerGetNullArgument()
-    {
-        $subject = $this->createInstance();
-        $reflect = $this->reflect($subject);
-
-        $this->setExpectedException('InvalidArgumentException');
-
-        $reflect->_containerGet(null, uniqid('key-'));
     }
 }

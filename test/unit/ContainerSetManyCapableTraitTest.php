@@ -3,10 +3,11 @@
 namespace Dhii\Data\Container\UnitTest;
 
 use ArrayObject;
-use Dhii\Data\Container\ContainerGetCapableTrait as TestSubject;
+use Dhii\Data\Container\ContainerSetManyCapableTrait as TestSubject;
 use InvalidArgumentException;
+use OutOfRangeException;
 use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
+use ReflectionMethod;
 use Xpmock\TestCase;
 use Exception as RootException;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
@@ -17,14 +18,14 @@ use PHPUnit_Framework_MockObject_MockBuilder as MockBuilder;
  *
  * @since [*next-version*]
  */
-class ContainerGetCapableTraitTest extends TestCase
+class ContainerSetManyCapableTraitTest extends TestCase
 {
     /**
      * The class name of the test subject.
      *
      * @since [*next-version*]
      */
-    const TEST_SUBJECT_CLASSNAME = 'Dhii\Data\Container\ContainerGetCapableTrait';
+    const TEST_SUBJECT_CLASSNAME = 'Dhii\Data\Container\ContainerSetManyCapableTrait';
 
     /**
      * Creates a new instance of the test subject.
@@ -43,6 +44,8 @@ class ContainerGetCapableTraitTest extends TestCase
 
         $mock = $this->getMockBuilder(static::TEST_SUBJECT_CLASSNAME)
             ->setMethods($methods)
+            ->disableArgumentCloning()
+            ->enableProxyingToOriginalMethods()
             ->getMockForTrait();
 
         $mock->method('__')
@@ -115,6 +118,42 @@ class ContainerGetCapableTraitTest extends TestCase
     }
 
     /**
+     * Creates a new Not Found exception.
+     *
+     * @since [*next-version*]
+     *
+     * @param string $message The exception message.
+     *
+     * @return MockObject|RootException|InvalidArgumentException The new exception.
+     */
+    public function createInvalidArgumentException($message = '')
+    {
+        $mock = $this->getMockBuilder('InvalidArgumentException')
+            ->setConstructorArgs([$message])
+            ->getMockForAbstractClass();
+
+        return $mock;
+    }
+
+    /**
+     * Creates a new Out of Range exception.
+     *
+     * @since [*next-version*]
+     *
+     * @param string $message The exception message.
+     *
+     * @return MockObject|RootException|OutOfRangeException The new exception.
+     */
+    public function createOutOfRangeException($message = '')
+    {
+        $mock = $this->getMockBuilder('OutOfRangeException')
+            ->setConstructorArgs([$message])
+            ->getMockForAbstractClass();
+
+        return $mock;
+    }
+
+    /**
      * Creates a new Container exception.
      *
      * @since [*next-version*]
@@ -130,44 +169,6 @@ class ContainerGetCapableTraitTest extends TestCase
 
         $mock->method('getMessage')
             ->will($this->returnValue($message));
-
-        return $mock;
-    }
-
-    /**
-     * Creates a new Not Found exception.
-     *
-     * @since [*next-version*]
-     *
-     * @param string $message The exception message.
-     *
-     * @return MockObject|NotFoundExceptionInterface The new exception.
-     */
-    public function createNotFoundException($message = '')
-    {
-        $mock = $this->mockClassAndInterfaces('Exception', ['Psr\Container\NotFoundExceptionInterface'])
-            ->getMockForAbstractClass();
-
-        $mock->method('getMessage')
-            ->will($this->returnValue($message));
-
-        return $mock;
-    }
-
-    /**
-     * Creates a new Not Found exception.
-     *
-     * @since [*next-version*]
-     *
-     * @param string $message The exception message.
-     *
-     * @return MockObject|RootException|InvalidArgumentException The new exception.
-     */
-    public function createInvalidArgumentException($message = '')
-    {
-        $mock = $this->getMockBuilder('InvalidArgumentException')
-            ->setConstructorArgs([$message])
-            ->getMockForAbstractClass();
 
         return $mock;
     }
@@ -189,6 +190,7 @@ class ContainerGetCapableTraitTest extends TestCase
         $mock = $this->getMockBuilder('ArrayObject')
             ->setMethods($methods)
             ->setConstructorArgs($data)
+            ->enableProxyingToOriginalMethods()
             ->getMock();
 
         return $mock;
@@ -211,96 +213,116 @@ class ContainerGetCapableTraitTest extends TestCase
     }
 
     /**
-     * Tests that `_containerGet()` fails correctly when given an invalid container.
+     * Tests that `_containerSetMany()` works as expected.
      *
      * @since [*next-version*]
      */
-    public function testContainerGetFailureInvalidContainer()
+    public function testContainerSetMany()
     {
         $key = uniqid('key');
-        $container = uniqid('container');
-        $exception = $this->createInvalidArgumentException('Invalid container');
+        $val = uniqid('val');
+        $data = [$key => $val];
+        $initialData = [uniqid('key') => uniqid('val')];
+        $container = $this->createArrayAccess($initialData);
         $subject = $this->createInstance();
+
+        $subject->expects($this->exactly(1))
+            ->method('_normalizeIterable')
+            ->with($data)
+            ->will($this->returnValue($data));
+
+        $subject->expects($this->exactly(1))
+            ->method('_containerSet')
+            ->withConsecutive([$container, $key, $val]);
+
+        $reflection = new ReflectionMethod($subject, '_containerSetMany');
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($subject, [&$container, $data]);
+    }
+
+    /**
+     * Tests that `_containerSetMany()` fails correctly when given an invalid data set.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerSetManyFailureInvalidData()
+    {
+        $key = uniqid('key');
+        $val = uniqid('val');
+        $data = [$key => $val];
+        $container = $this->createArrayAccess();
+        $exception = $this->createInvalidArgumentException('Invalid data set');
+        $subject = $this->createInstance(['_normalizeIterable']);
         $_subject = $this->reflect($subject);
 
         $subject->expects($this->exactly(1))
-            ->method('_createInvalidArgumentException')
-            ->with(
-                $this->isType('string'),
-                null,
-                null,
-                $container
-            )
-            ->will($this->returnValue($exception));
+            ->method('_normalizeIterable')
+            ->with($data)
+            ->will($this->throwException($exception));
 
         $this->setExpectedException('InvalidArgumentException');
-        $_subject->_containerGet($container, $key);
+        $reflection = new ReflectionMethod($subject, '_containerSetMany');
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($subject, [&$container, $data]);
     }
 
     /**
-     * Tests that `_containerGet()` works as expected when given an `ArrayAccess` which throws in `offsetExists()`.
+     * Tests that `_containerSetMany()` fails correctly when given an invalid container.
      *
      * @since [*next-version*]
      */
-    public function testContainerGetArrayAccessFailureOffsetExists()
+    public function testContainerSetManyFailureInvalidContainer()
     {
         $key = uniqid('key');
-        $containerException = $this->createContainerException('Error checking for key');
-        $exception = $this->createException('Problem inside `offsetExists()`');
-        $container = $this->createArrayAccess(['offsetExists']);
-        $subject = $this->createInstance(['_createContainerException', '_normalizeKey']);
+        $val = uniqid('val');
+        $data = [$key => $val];
+        $container = $this->createArrayAccess();
+        $exception = $this->createInvalidArgumentException('Invalid container');
+        $subject = $this->createInstance(['_containerSet']);
         $_subject = $this->reflect($subject);
 
-        $container->expects($this->exactly(1))
-            ->method('offsetExists')
-            ->with($key)
+        $subject->expects($this->exactly(1))
+            ->method('_normalizeIterable')
+            ->with($data)
+            ->will($this->returnValue($data));
+        $subject->expects($this->exactly(1))
+            ->method('_containerSet')
+            ->with($container, $key, $val)
             ->will($this->throwException($exception));
-        $subject->expects($this->exactly(1))
-            ->method('_normalizeKey')
-            ->with($key)
-            ->will($this->returnArgument(0));
-        $subject->expects($this->exactly(1))
-            ->method('_createContainerException')
-            ->with()
-            ->will($this->returnValue($containerException));
 
-        $this->setExpectedException('Psr\Container\ContainerExceptionInterface');
-        $_subject->_containerGet($container, $key);
+        $this->setExpectedException('InvalidArgumentException');
+        $reflection = new ReflectionMethod($subject, '_containerSetMany');
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($subject, [&$container, $data]);
     }
 
     /**
-     * Tests that `_containerGet()` works as expected when given an `ArrayAccess` which throws in `offsetGet()`.
+     * Tests that `_containerSetMany()` fails correctly when one of the data keys is invalid.
      *
      * @since [*next-version*]
      */
-    public function testContainerGetArrayAccessFailureOffsetGet()
+    public function testContainerSetManyFailureInvalidKey()
     {
         $key = uniqid('key');
-        $containerException = $this->createContainerException('Error checking for key');
-        $exception = $this->createException('Problem inside `offsetGet()`');
-        $container = $this->createArrayAccess(['offsetGet'], [[$key => uniqid('val')]]);
-        $subject = $this->createInstance(['_createContainerException', '_normalizeKey']);
+        $val = uniqid('val');
+        $data = [$key => $val];
+        $container = $this->createArrayAccess();
+        $exception = $this->createOutOfRangeException('Invalid key');
+        $subject = $this->createInstance(['_containerSet']);
         $_subject = $this->reflect($subject);
 
-        $container->expects($this->exactly(1))
-            ->method('offsetGet')
-            ->with($key)
+        $subject->expects($this->exactly(1))
+            ->method('_normalizeIterable')
+            ->with($data)
+            ->will($this->returnValue($data));
+        $subject->expects($this->exactly(1))
+            ->method('_containerSet')
+            ->with($container, $key, $val)
             ->will($this->throwException($exception));
-        $subject->expects($this->exactly(1))
-            ->method('_normalizeKey')
-            ->with($key)
-            ->will($this->returnArgument(0));
-        $subject->expects($this->exactly(1))
-            ->method('_createContainerException')
-            ->with(
-                $this->isType('string'),
-                null,
-                $exception,
-                null
-            )
-            ->will($this->returnValue($containerException));
 
-        $this->setExpectedException('Psr\Container\ContainerExceptionInterface');
-        $_subject->_containerGet($container, $key);
+        $this->setExpectedException('OutOfRangeException');
+        $reflection = new ReflectionMethod($subject, '_containerSetMany');
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($subject, [&$container, $data]);
     }
 }

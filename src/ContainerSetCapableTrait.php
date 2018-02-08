@@ -3,66 +3,65 @@
 namespace Dhii\Data\Container;
 
 use ArrayAccess;
-use Dhii\Util\String\StringableInterface as Stringable;
-use Exception as RootException;
 use InvalidArgumentException;
 use OutOfRangeException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface as BaseContainerInterface;
 use stdClass;
+use Exception as RootException;
+use Dhii\Util\String\StringableInterface as Stringable;
 
 /**
- * Common functionality for checking if a data set contains a specific key.
+ * Functionality for setting data on a container.
  *
  * @since [*next-version*]
  */
-trait ContainerHasCapableTrait
+trait ContainerSetCapableTrait
 {
     /**
-     * Retrieves an entry from a container or data set.
+     * Sets data on the container.
      *
      * @since [*next-version*]
      *
-     * @param array|ArrayAccess|stdClass|BaseContainerInterface $container The container to read from.
-     * @param string|int|float|bool|Stringable                  $key       The key of the value to retrieve.
+     * @param array|ArrayAccess|stdClass       $container The container to set data on.
+     * @param string|int|float|bool|Stringable $key       The key to set the value for.
+     * @param mixed                            $value     The value to set.
      *
-     * @throws ContainerExceptionInterface If an error occurred while reading from the container.
-     * @throws OutOfRangeException         If the container or the key is invalid.
-     *
-     * @return bool True if the container has an entry for the given key, false if not.
+     * @throws InvalidArgumentException    If the container is invalid.
+     * @throws OutOfRangeException         If key is invalid.
+     * @throws ContainerExceptionInterface If error occurs while writing to container.
      */
-    protected function _containerHas($container, $key)
+    protected function _containerSet(&$container, $key, $value)
     {
         $key = $this->_normalizeKey($key);
 
-        if ($container instanceof BaseContainerInterface) {
-            return $container->has($key);
-        }
+        try {
+            if (is_array($container)) {
+                $container[$key] = $value;
 
-        if ($container instanceof ArrayAccess) {
-            // Catching exceptions thrown by `offsetExists()`
-            try {
-                return $container->offsetExists($key);
-            } catch (RootException $e) {
-                throw $this->_createContainerException($this->__('Could not check for key "%1$s"', [$key]), null, $e, null);
+                return;
             }
-        }
 
-        if (is_array($container)) {
-            return isset($container[$key]);
-        }
+            if ($container instanceof ArrayAccess) {
+                $container->offsetSet($key, $value);
 
-        if ($container instanceof stdClass) {
-            return property_exists($container, $key);
+                return;
+            }
+
+            if ($container instanceof stdClass) {
+                $container->{$key} = $value;
+
+                return;
+            }
+        } catch (RootException $e) {
+            throw $this->_createContainerException($this->__('Could not write to container'), null, $e);
         }
 
         throw $this->_createInvalidArgumentException($this->__('Not a valid container'), null, null, $container);
     }
 
     /**
-     * Normalizes a key.
-     *
-     * Treats it as one of many keys, throwing a more appropriate exception.
+     * Normalizes a data key.
      *
      * @param string|int|float|bool|Stringable $key The key to normalize.
      *

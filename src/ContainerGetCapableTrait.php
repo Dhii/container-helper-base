@@ -6,8 +6,9 @@ use ArrayAccess;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use InvalidArgumentException;
+use OutOfRangeException;
 use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\ContainerInterface;
+use Psr\Container\ContainerInterface as BaseContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use stdClass;
 
@@ -23,9 +24,10 @@ trait ContainerGetCapableTrait
      *
      * @since [*next-version*]
      *
-     * @param array|ArrayAccess|stdClass|ContainerInterface $container The container to read from.
-     * @param string|int|float|bool|Stringable              $key       The key of the value to retrieve.
+     * @param array|ArrayAccess|stdClass|BaseContainerInterface $container The container to read from.
+     * @param string|int|float|bool|Stringable                  $key       The key of the value to retrieve.
      *
+     * @throws InvalidArgumentException    If container is invalid.
      * @throws ContainerExceptionInterface If an error occurred while reading from the container.
      * @throws NotFoundExceptionInterface  If the key was not found in the container.
      *
@@ -33,16 +35,15 @@ trait ContainerGetCapableTrait
      */
     protected function _containerGet($container, $key)
     {
-        $container = $this->_normalizeContainer($container);
-        $origKey   = $key;
-        $key       = $this->_normalizeString($key);
+        $origKey = $key;
+        $key     = $this->_normalizeKey($key);
         // NotFoundExceptionInterface#getDataKey() returns `string` or `Stringable`,
         // so normalize only other types, and preserve original
         $origKey = is_string($origKey) || $origKey instanceof Stringable
             ? $origKey
             : $key;
 
-        if ($container instanceof ContainerInterface) {
+        if ($container instanceof BaseContainerInterface) {
             try {
                 return $container->get($key);
             } catch (NotFoundExceptionInterface $e) {
@@ -53,7 +54,7 @@ trait ContainerGetCapableTrait
         if ($container instanceof ArrayAccess) {
             // Catching exceptions thrown by `offsetExists()`
             try {
-                $hasKey = isset($container[$key]);
+                $hasKey = $container->offsetExists($key);
             } catch (RootException $e) {
                 throw $this->_createContainerException($this->__('Could not check for key "%1$s"', [$key]), null, $e, null);
             }
@@ -64,7 +65,7 @@ trait ContainerGetCapableTrait
 
             // Catching exceptions thrown by `offsetGet()`
             try {
-                return $container[$key];
+                return $container->offsetGet($key);
             } catch (RootException $e) {
                 throw $this->_createContainerException($this->__('Could not retrieve value'), null, $e, null);
             }
@@ -78,38 +79,39 @@ trait ContainerGetCapableTrait
             return $container[$key];
         }
 
-        // Container is an `stdClass`
-        if (!property_exists($container, $key)) {
-            throw $this->_createNotFoundException($this->__('Key not found'), null, null, null, $origKey);
+        if ($container instanceof stdClass) {
+            // Container is an `stdClass`
+            if (!property_exists($container, $key)) {
+                throw $this->_createNotFoundException($this->__('Key not found'), null, null, null, $origKey);
+            }
+
+            return $container->{$key};
         }
 
-        return $container->{$key};
+        throw $this->_createInvalidArgumentException($this->__('Not a valid container'), null, null, $container);
     }
 
     /**
-     * Normalizes a value to its string representation.
+     * Normalizes a key.
      *
-     * The values that can be normalized are any scalar values, as well as
-     * {@see Stringable).
+     * Treats it as one of many keys, throwing a more appropriate exception.
      *
-     * @since [*next-version*]
+     * @param string|int|float|bool|Stringable $key The key to normalize.
      *
-     * @param string|int|float|bool|Stringable $subject The value to normalize to string.
+     * @throws OutOfRangeException If key cannot be normalized.
      *
-     * @throws InvalidArgumentException If the value cannot be normalized.
-     *
-     * @return string The string that resulted from normalization.
+     * @return string The normalized key.
      */
-    abstract protected function _normalizeString($subject);
+    abstract protected function _normalizeKey($key);
 
     /**
      * Creates a new not found exception.
      *
-     * @param string|Stringable|null     $message   The exception message, if any.
-     * @param int|string|Stringable|null $code      The numeric exception code, if any.
-     * @param RootException|null         $previous  The inner exception, if any.
-     * @param ContainerInterface|null    $container The associated container, if any.
-     * @param string|Stringable|null     $dataKey   The missing data key, if any.
+     * @param string|Stringable|null      $message   The exception message, if any.
+     * @param int|string|Stringable|null  $code      The numeric exception code, if any.
+     * @param RootException|null          $previous  The inner exception, if any.
+     * @param BaseContainerInterface|null $container The associated container, if any.
+     * @param string|Stringable|null      $dataKey   The missing data key, if any.
      *
      * @since [*next-version*]
      *
@@ -119,32 +121,17 @@ trait ContainerGetCapableTrait
         $message = null,
         $code = null,
         RootException $previous = null,
-        ContainerInterface $container = null,
+        BaseContainerInterface $container = null,
         $dataKey = null
     );
 
     /**
-     * Normalizes a container.
-     *
-     * @since [*next-version*]
-     *
-     * @param array|ArrayAccess|stdClass|ContainerInterface $container The container to normalize.
-     *
-     * @throws InvalidArgumentException If the container is invalid.
-     *
-     * @return array|ArrayAccess|stdClass|ContainerInterface Something that can be used with
-     *                                                       {@see ContainerGetCapableTrait#_containerGet()} or
-     *                                                       {@see ContainerHasCapableTrait#_containerHas()}.
-     */
-    abstract protected function _normalizeContainer($container);
-
-    /**
      * Creates a new container exception.
      *
-     * @param string|Stringable|null     $message   The exception message, if any.
-     * @param int|string|Stringable|null $code      The numeric exception code, if any.
-     * @param RootException|null         $previous  The inner exception, if any.
-     * @param ContainerInterface|null    $container The associated container, if any.
+     * @param string|Stringable|null      $message   The exception message, if any.
+     * @param int|string|Stringable|null  $code      The numeric exception code, if any.
+     * @param RootException|null          $previous  The inner exception, if any.
+     * @param BaseContainerInterface|null $container The associated container, if any.
      *
      * @since [*next-version*]
      *
@@ -154,7 +141,26 @@ trait ContainerGetCapableTrait
         $message = null,
         $code = null,
         RootException $previous = null,
-        ContainerInterface $container = null
+        BaseContainerInterface $container = null
+    );
+
+    /**
+     * Creates a new Invalid Argument exception.
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable|null $message  The error message, if any.
+     * @param int|null               $code     The error code, if any.
+     * @param RootException|null     $previous The inner exception for chaining, if any.
+     * @param mixed|null             $argument The invalid argument, if any.
+     *
+     * @return InvalidArgumentException The new exception.
+     */
+    abstract protected function _createInvalidArgumentException(
+        $message = null,
+        $code = null,
+        RootException $previous = null,
+        $argument = null
     );
 
     /**
