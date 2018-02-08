@@ -1,6 +1,6 @@
 # Dhii - Container Helper Base
 
-[![Build Status](https://travis-ci.org/dhii/container-helper-base.svg?branch=develop)](https://travis-ci.org/dhii/container-helper-base)
+[![Build Status](https://travis-ci.org/Dhii/container-helper-base.svg?branch=develop)](https://travis-ci.org/Dhii/container-helper-base)
 [![Code Climate](https://codeclimate.com/github/Dhii/container-helper-base/badges/gpa.svg)](https://codeclimate.com/github/Dhii/container-helper-base)
 [![Test Coverage](https://codeclimate.com/github/Dhii/container-helper-base/badges/coverage.svg)](https://codeclimate.com/github/Dhii/container-helper-base/coverage)
 [![Latest Stable Version](https://poser.pugx.org/dhii/container-helper-base/version)](https://packagist.org/packages/dhii/container-helper-base)
