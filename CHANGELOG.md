@@ -5,8 +5,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
+
+## [0.1-alpha5] - YYYY-MM-DD
 ### Fixed
-- Bug where the Dhii container was being checked for, instead of the PSR one.
+- Bugs where the Dhii container was being checked for, instead of the PSR one.
+- Methods were missing `@throws` docs for validation exceptions.
+
+### Added
+- Phan config.
+- `ContainerSetCapableTrait`, `ContainerSetManyCapableTrait`, `ContainerUnsetCapableTrait`,
+`ContainerUnsetManyCapableTrait`, and `NormalizeKeyCapableTrait`.
+
+### Changed
+- The `ArrayAccess` API is explicitly used where appropriate.
+- `_containerGet()` and `_containerHas()` no longer do container normalization.
+- Using the new `_normalizeKey()` for key normalization, instead of `_normalizeString()`.
 
 ## [0.1-alpha4] - 2018-02-01
 ### Fixed
