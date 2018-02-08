@@ -11,6 +11,11 @@ use stdClass;
 use Traversable;
 use Dhii\Util\String\StringableInterface as Stringable;
 
+/**
+ * Functionality for unsetting multiple data pieces on a container.
+ *
+ * @since [*next-version*]
+ */
 trait ContainerUnsetManyCapableTrait
 {
     /**

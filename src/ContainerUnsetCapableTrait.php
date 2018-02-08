@@ -12,6 +12,11 @@ use Dhii\Util\String\StringableInterface as Stringable;
 use Exception as RootException;
 use Psr\Container\ContainerInterface as BaseContainerInterface;
 
+/**
+ * Functionality for unsetting data on a container.
+ *
+ * @since [*next-version*]
+ */
 trait ContainerUnsetCapableTrait
 {
     /**

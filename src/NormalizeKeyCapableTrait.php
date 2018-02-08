@@ -7,6 +7,11 @@ use Exception as RootException;
 use InvalidArgumentException;
 use OutOfRangeException;
 
+/**
+ * Functionality for container data key normalization.
+ *
+ * @since [*next-version*]
+ */
 trait NormalizeKeyCapableTrait
 {
     /**
