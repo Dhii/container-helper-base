@@ -15,9 +15,14 @@ a known container representation. Types include [`ContainerInterface`][Container
 [`NotFoundExceptionInterface`][NotFoundExceptionInterface].
 - [`ContainerHasCapableTrait`][ContainerHasCapableTrait] - Allows checking for values by key from anything that is
 a known container implementation.
+- [`ContainerSetCapableTrait`][ContainerSetCapableTrait] - Allows setting a value on a writable container.
+- [`ContainerSetManyCapableTrait`][ContainerSetManyCapableTrait] - Allows setting multiple values on a writable container.
+- [`ContainerUnsetCapableTrait`][ContainerUnsetCapableTrait] - Allows unsetting a value on a writable container.
+- [`ContainerUnsetManyCapableTrait`][ContainerUnsetManyCapableTrait] - Allows unsetting multiple values on a writable container.
 - [`NormalizeContainerCapableTrait`][NormalizeContainerCapableTrait] - Functionality for container normalization.
 - [`NormalizeWritableContainerCapableTrait`][NormalizeWritableContainerCapableTrait] - Functionality for normalizing
 writable containers.
+- [`NormalizeKeyCapableTrait`][NormalizeKeyCapableTrait] - Allows normalizing container keys.
 
 [Dhii]: https://github.com/Dhii/dhii
 
@@ -25,6 +30,11 @@ writable containers.
 [ContainerHasCapableTrait]:                 src/ContainerHasCapableTrait.php
 [NormalizeContainerCapableTrait]:           src/NormalizeContainerCapableTrait.php
 [NormalizeWritableContainerCapableTrait]:   src/NormalizeWritableContainerCapableTrait.php
+[ContainerSetCapableTrait]:                 src/ContainerSetCapableTrait.php
+[ContainerSetManyCapableTrait]:             src/ContainerSetManyCapableTrait.php
+[ContainerUnsetCapableTrait]:               src/ContainerUnsetCapableTrait.php
+[ContainerUnsetManyCapableTrait]:           src/ContainerUnsetManyCapableTrait.php
+[NormalizeKeyCapableTrait]:                 src/NormalizeKeyCapableTrait.php
 
 [ContainerInterface]:                       https://github.com/php-fig/container/blob/master/src/ContainerInterface.php
 [NotFoundExceptionInterface]:               https://github.com/php-fig/container/blob/master/src/NotFoundExceptionInterface.php
