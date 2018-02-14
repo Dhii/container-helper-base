@@ -16,7 +16,7 @@ return [
     // your application should be included in this list.
     'directory_list' => [
         'src',
-        'vendor'
+        'vendor',
     ],
 
     // A directory list that defines files that will be excluded
@@ -30,8 +30,8 @@ return [
     //       party code, directories containing that code
     //       should be added to the `directory_list` as
     //       to `exclude_analysis_directory_list`.
-    "exclude_analysis_directory_list" => [
-        'vendor/'
+    'exclude_analysis_directory_list' => [
+        'vendor/',
     ],
 
     // A list of plugin files to execute.
