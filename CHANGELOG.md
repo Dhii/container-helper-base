@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
 
-## [0.1-alpha5] - YYYY-MM-DD
+## [0.1-alpha5] - 2018-02-16
 ### Fixed
 - Bugs where the Dhii container was being checked for, instead of the PSR one.
 - Methods were missing `@throws` docs for validation exceptions.
