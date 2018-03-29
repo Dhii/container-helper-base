@@ -261,7 +261,12 @@ class ContainerGetCapableTraitTest extends TestCase
             ->will($this->returnArgument(0));
         $subject->expects($this->exactly(1))
             ->method('_createContainerException')
-            ->with()
+            ->with(
+                $this->isType('string'),
+                null,
+                $exception,
+                null
+            )
             ->will($this->returnValue($containerException));
 
         $this->setExpectedException('Psr\Container\ContainerExceptionInterface');
