@@ -46,7 +46,9 @@ class ContainerGetCapableTraitTest extends TestCase
             ->getMockForTrait();
 
         $mock->method('__')
-                ->will($this->returnArgument(0));
+                ->will($this->returnCallback(function ($string, $values) {
+                    return vsprintf($string, $values);
+                }));
 
         return $mock;
     }
@@ -261,7 +263,12 @@ class ContainerGetCapableTraitTest extends TestCase
             ->will($this->returnArgument(0));
         $subject->expects($this->exactly(1))
             ->method('_createContainerException')
-            ->with()
+            ->with(
+                $this->matchesRegularExpression(sprintf('!%1$s!', $key)),
+                null,
+                $exception,
+                null
+            )
             ->will($this->returnValue($containerException));
 
         $this->setExpectedException('Psr\Container\ContainerExceptionInterface');
@@ -293,7 +300,7 @@ class ContainerGetCapableTraitTest extends TestCase
         $subject->expects($this->exactly(1))
             ->method('_createContainerException')
             ->with(
-                $this->isType('string'),
+                $this->matchesRegularExpression(sprintf('!%1$s!', $key)),
                 null,
                 $exception,
                 null

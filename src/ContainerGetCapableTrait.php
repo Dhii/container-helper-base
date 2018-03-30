@@ -47,7 +47,7 @@ trait ContainerGetCapableTrait
             try {
                 return $container->get($key);
             } catch (NotFoundExceptionInterface $e) {
-                throw $this->_createNotFoundException($this->__('Key not found'), null, $e, null, $origKey);
+                throw $this->_createNotFoundException($this->__('Key "%1$s" not found', [$key]), null, $e, null, $origKey);
             }
         }
 
@@ -60,20 +60,20 @@ trait ContainerGetCapableTrait
             }
 
             if (!$hasKey) {
-                throw $this->_createNotFoundException($this->__('Key not found'), null, null, null, $origKey);
+                throw $this->_createNotFoundException($this->__('Key "%1$s" not found', [$key]), null, null, null, $origKey);
             }
 
             // Catching exceptions thrown by `offsetGet()`
             try {
                 return $container->offsetGet($key);
             } catch (RootException $e) {
-                throw $this->_createContainerException($this->__('Could not retrieve value'), null, $e, null);
+                throw $this->_createContainerException($this->__('Could not retrieve value for key "%1$s"', [$key]), null, $e, null);
             }
         }
 
         if (is_array($container)) {
             if (!isset($container[$key])) {
-                throw $this->_createNotFoundException($this->__('Key not found'), null, null, null, $origKey);
+                throw $this->_createNotFoundException($this->__('Key "%1$s" not found', [$key]), null, null, null, $origKey);
             }
 
             return $container[$key];
@@ -82,7 +82,7 @@ trait ContainerGetCapableTrait
         if ($container instanceof stdClass) {
             // Container is an `stdClass`
             if (!property_exists($container, $key)) {
-                throw $this->_createNotFoundException($this->__('Key not found'), null, null, null, $origKey);
+                throw $this->_createNotFoundException($this->__('Key "%1$s" not found', [$key]), null, null, null, $origKey);
             }
 
             return $container->{$key};

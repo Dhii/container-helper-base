@@ -58,7 +58,10 @@ class ContainerGetCapableTraitTest extends TestCase
                      ->setMethods($methods)
                      ->getMockForTrait();
 
-        $mock->method('__')->willReturnArgument(0);
+        $mock->method('__')
+            ->will($this->returnCallback(function ($string, $values) {
+                return vsprintf($string, $values);
+            }));
         $mock->method('_normalizeKey')
             ->will($this->returnCallback(function ($subject) {
                 return (string) $subject;
@@ -197,6 +200,15 @@ class ContainerGetCapableTraitTest extends TestCase
                   ->method('get')
                   ->with($key)
                   ->willThrowException($notFoundException);
+        $subject->expects($this->exactly(1))
+            ->method('_createNotFoundException')
+            ->with(
+                $this->matchesRegularExpression(sprintf('!%1$s!', $key)),
+                null,
+                $notFoundException,
+                null,
+                $key
+            );
 
         $this->setExpectedException(static::NOT_FOUND_EXCEPTION_FQN);
 
@@ -309,6 +321,16 @@ class ContainerGetCapableTraitTest extends TestCase
         $container = [];
         $container[$realKey] = $expected;
 
+        $subject->expects($this->exactly(1))
+            ->method('_createNotFoundException')
+            ->with(
+                $this->matchesRegularExpression(sprintf('!%1$s!', $wrongKey)),
+                null,
+                null,
+                null,
+                $wrongKey
+            );
+
         $this->setExpectedException(static::NOT_FOUND_EXCEPTION_FQN);
 
         $reflect->_containerGet($container, $wrongKey);
@@ -386,6 +408,16 @@ class ContainerGetCapableTraitTest extends TestCase
         $wrongKey = uniqid('key-');
         $expected = uniqid('expected-');
         $container = new ArrayObject([$realKey => $expected]);
+
+        $subject->expects($this->exactly(1))
+            ->method('_createNotFoundException')
+            ->with(
+                $this->matchesRegularExpression(sprintf('!%1$s!', $wrongKey)),
+                null,
+                null,
+                null,
+                $wrongKey
+            );
 
         $this->setExpectedException(static::NOT_FOUND_EXCEPTION_FQN);
 

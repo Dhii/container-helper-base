@@ -54,7 +54,7 @@ trait ContainerSetCapableTrait
                 return;
             }
         } catch (RootException $e) {
-            throw $this->_createContainerException($this->__('Could not write to container'), null, $e);
+            throw $this->_createContainerException($this->__('Could not write to container key "%1$s"', [$key]), null, $e);
         }
 
         throw $this->_createInvalidArgumentException($this->__('Not a valid container'), null, null, $container);

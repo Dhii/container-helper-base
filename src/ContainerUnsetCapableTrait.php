@@ -39,7 +39,7 @@ trait ContainerUnsetCapableTrait
 
         if (is_array($container)) {
             if (!isset($container[$key])) {
-                throw $this->_createNotFoundException($this->__('Key not found'), null, null, null, $key);
+                throw $this->_createNotFoundException($this->__('Key "%1$s" not found', [$key]), null, null, null, $key);
             }
 
             unset($container[$key]);
@@ -49,7 +49,7 @@ trait ContainerUnsetCapableTrait
 
         if ($container instanceof stdClass) {
             if (!isset($container->{$key})) {
-                throw $this->_createNotFoundException($this->__('Key not found'), null, null, null, $key);
+                throw $this->_createNotFoundException($this->__('Key "%1$s" not found', [$key]), null, null, null, $key);
             }
 
             unset($container->{$key});
@@ -61,11 +61,11 @@ trait ContainerUnsetCapableTrait
             try {
                 $hasKey = $container->offsetExists($key);
             } catch (RootException $e) {
-                throw $this->_createContainerException($this->__('Could not check key on container'), null, $e, null);
+                throw $this->_createContainerException($this->__('Could not check key "%1$s" on container', [$key]), null, $e, null);
             }
 
             if (!$hasKey) {
-                throw $this->_createNotFoundException($this->__('Key not found'), null, null, null, $key);
+                throw $this->_createNotFoundException($this->__('Key "%1$s" not found', [$key]), null, null, null, $key);
             }
 
             try {
@@ -73,7 +73,7 @@ trait ContainerUnsetCapableTrait
 
                 return;
             } catch (RootException $e) {
-                throw $this->_createContainerException($this->__('Could not unset key on container'), null, $e, null);
+                throw $this->_createContainerException($this->__('Could not unset key "%1$s" on container', [$key]), null, $e, null);
             }
         }
 
