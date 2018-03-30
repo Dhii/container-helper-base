@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
+### Added
+- Exception messages related to keys now include the key for convenience.
 
 ## [0.1-alpha5] - 2018-02-16
 ### Fixed
