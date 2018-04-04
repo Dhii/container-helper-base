@@ -18,7 +18,7 @@ trait ContainerGetPathCapableTrait
      * @since [*next-version*]
      *
      * @param array|ArrayAccess|stdClass|BaseContainerInterface $container The top container in the chain to read from.
-     * @param string[]|Stringable[]                             $path      The list of path segments.
+     * @param array|Traversable|stdClass                        $path      The list of path segments.
      *
      * @throws InvalidArgumentException    If one of the containers in the chain is invalid.
      * @throws ContainerExceptionInterface If an error occurred while reading from one of the containers in the chain.
@@ -28,9 +28,12 @@ trait ContainerGetPathCapableTrait
      */
     protected function _containerGetPath($container, $path)
     {
+        $path = $this->_normalizeIterable($path);
+
         $service = $container;
-        for ($i = 0; $i < count($path); $i++) {
-            $service = $this->_containerGet($service, $path[$i]);
+
+        foreach ($path as $segment) {
+            $service = $this->_containerGet($service, $segment);
         }
         return $service;
     }
@@ -50,4 +53,19 @@ trait ContainerGetPathCapableTrait
      * @return mixed The value mapped to the given key.
      */
     abstract protected function _containerGet($container, $key);
+
+    /**
+     * Normalizes an iterable.
+     *
+     * Makes sure that the return value can be iterated over.
+     *
+     * @since [*next-version*]
+     *
+     * @param mixed $iterable The iterable to normalize.
+     *
+     * @throws InvalidArgumentException If the iterable could not be normalized.
+     *
+     * @return array|Traversable|stdClass The normalized iterable.
+     */
+    abstract protected function _normalizeIterable($iterable);
 }

@@ -110,6 +110,10 @@ class ContainerGetPathCapableTraitTest extends TestCase
                 [$container2, $key2, $value]
             ]));
 
+        $subject->expects($this->exactly(1))
+            ->method('_normalizeIterable')
+            ->will($this->returnArgument(0));
+
       	$result = $_subject->_containerGetPath($container1, [$key1, $key2]);
         $this->assertEquals($value, $result, 'Wrong result returned');
     }
