@@ -56,6 +56,24 @@ class ContainerGetPathCapableTraitTest extends TestCase
     }
 
     /**
+     * Creates a new exception.
+     *
+     * @since [*next-version*]
+     *
+     * @param string $message The exception message.
+     *
+     * @return Exception The new exception.
+     */
+    public function createException($message = '')
+    {
+        $mock = $this->getMockBuilder('Exception')
+            ->setConstructorArgs([$message])
+            ->getMock();
+
+        return $mock;
+    }
+
+    /**
      * Merges the values of two arrays.
      *
      * The resulting product will be a numeric array where the values of both inputs are present, without duplicates.
@@ -100,7 +118,7 @@ class ContainerGetPathCapableTraitTest extends TestCase
         $value = uniqid('value');
         $container1 = uniqid('container');
         $container2 = uniqid('container');
-        $subject = $this->createInstance(['_containerGet']);
+        $subject = $this->createInstance(['_containerGet', '_normalizeIterable']);
         $_subject = $this->reflect($subject);
 
         $subject->expects($this->exactly(2))
@@ -116,5 +134,32 @@ class ContainerGetPathCapableTraitTest extends TestCase
 
         $result = $_subject->_containerGetPath($container1, [$key1, $key2]);
         $this->assertEquals($value, $result, 'Wrong result returned');
+    }
+
+    /**
+     * Tests that `_containerGetPath()` will sent internal exceptions up to caller.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerGetPathFailure()
+    {
+        $key1 = uniqid('key');
+        $key2 = uniqid('key');
+        $container1 = uniqid('container');
+        $subject = $this->createInstance(['_containerGet', '_normalizeIterable']);
+        $_subject = $this->reflect($subject);
+
+        $subject->expects($this->exactly(1))
+            ->method('_normalizeIterable')
+            ->will($this->returnArgument(0));
+
+        $subject->expects($this->exactly(1))
+            ->method('_containerGet')
+            ->will($this->throwException(
+                $this->createException('Problem inside `_containerGet()`')
+            ));
+
+        $this->setExpectedException('Exception');
+        $_subject->_containerGetPath($container1, [$key1, $key2]);
     }
 }
