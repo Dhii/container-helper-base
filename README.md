@@ -13,6 +13,8 @@ Helper functionality for working with container.
 a known container representation. Types include [`ContainerInterface`][ContainerInterface], `array`,
 [`ArrayAccess`][ArrayAccess], and [`stdClass`][stdClass]. Accessing a non-existing key throws a
 [`NotFoundExceptionInterface`][NotFoundExceptionInterface].
+- [`ContainerGetPathCapableTrait`][ContainerGetPathCapableTrait] - Allows getting data from nested container using
+passed path (list of segments).
 - [`ContainerHasCapableTrait`][ContainerHasCapableTrait] - Allows checking for values by key from anything that is
 a known container implementation.
 - [`ContainerSetCapableTrait`][ContainerSetCapableTrait] - Allows setting a value on a writable container.
@@ -27,6 +29,7 @@ writable containers.
 [Dhii]: https://github.com/Dhii/dhii
 
 [ContainerGetCapableTrait]:                 src/ContainerGetCapableTrait.php
+[ContainerGetPathCapableTrait]:             src/ContainerGetPathCapableTrait.php
 [ContainerHasCapableTrait]:                 src/ContainerHasCapableTrait.php
 [NormalizeContainerCapableTrait]:           src/NormalizeContainerCapableTrait.php
 [NormalizeWritableContainerCapableTrait]:   src/NormalizeWritableContainerCapableTrait.php
