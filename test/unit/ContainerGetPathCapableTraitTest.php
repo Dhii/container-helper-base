@@ -63,7 +63,7 @@ class ContainerGetPathCapableTraitTest extends TestCase
      * @since [*next-version*]
      *
      * @param array $destination The base array.
-     * @param array $source The array with more keys.
+     * @param array $source      The array with more keys.
      *
      * @return array The array which contains unique values
      */
@@ -107,14 +107,14 @@ class ContainerGetPathCapableTraitTest extends TestCase
             ->method('_containerGet')
             ->will($this->returnValueMap([
                 [$container1, $key1, $container2],
-                [$container2, $key2, $value]
+                [$container2, $key2, $value],
             ]));
 
         $subject->expects($this->exactly(1))
             ->method('_normalizeIterable')
             ->will($this->returnArgument(0));
 
-      	$result = $_subject->_containerGetPath($container1, [$key1, $key2]);
+        $result = $_subject->_containerGetPath($container1, [$key1, $key2]);
         $this->assertEquals($value, $result, 'Wrong result returned');
     }
 }

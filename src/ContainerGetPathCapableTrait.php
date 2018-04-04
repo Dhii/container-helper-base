@@ -35,6 +35,7 @@ trait ContainerGetPathCapableTrait
         foreach ($path as $segment) {
             $service = $this->_containerGet($service, $segment);
         }
+
         return $service;
     }
 
