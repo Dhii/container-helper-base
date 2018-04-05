@@ -2,9 +2,12 @@
 
 namespace Dhii\Data\Container\UnitTest;
 
+use InvalidArgumentException;
+use Psr\Container\ContainerInterface;
 use ReflectionMethod;
 use Xpmock\TestCase;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use Exception as RootException;
 
 /**
  * Tests {@see TestSubject}.
@@ -37,8 +40,6 @@ class ContainerSetPathCapableTraitTest extends TestCase
 
         $mock = $this->getMockBuilder(static::TEST_SUBJECT_CLASSNAME)
             ->setMethods($methods)
-            ->disableArgumentCloning()
-            ->enableProxyingToOriginalMethods()
             ->getMockForTrait();
 
         $mock->method('__')
@@ -47,6 +48,15 @@ class ContainerSetPathCapableTraitTest extends TestCase
         return $mock;
     }
 
+    /**
+     * Creates a new `ContainerInterface` instance.
+     *
+     * @since [*next-version*]
+     *
+     * @param array $methods The methods to mock.
+     *
+     * @return MockObject|ContainerInterface
+     */
     public function createContainer($methods = [])
     {
         $mock = $this->getMockBuilder('Psr\Container\ContainerInterface')
@@ -63,7 +73,7 @@ class ContainerSetPathCapableTraitTest extends TestCase
      *
      * @param string $message The exception message.
      *
-     * @return Exception The new exception.
+     * @return RootException The new exception.
      */
     public function createException($message = '')
     {
@@ -184,9 +194,7 @@ class ContainerSetPathCapableTraitTest extends TestCase
 
         $subject->expects($this->exactly(1))
             ->method('_createInvalidArgumentException')
-            ->will(
-                $this->throwException($pathException)
-            );
+            ->will($this->throwException($pathException));
 
         $this->setExpectedException('InvalidArgumentException');
 
