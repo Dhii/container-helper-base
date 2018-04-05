@@ -13,11 +13,6 @@ engines:
       file_extensions:
         - php
       rulesets: "phpmd.xml"
-plugins:
-  phan:
-    enabled: true
-    config:
-      file_extensions: "php"
 ratings:
   paths:
   - "**.inc"
