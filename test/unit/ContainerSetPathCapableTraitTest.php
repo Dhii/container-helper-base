@@ -139,8 +139,8 @@ class ContainerSetPathCapableTraitTest extends TestCase
         $path = [$key1, $key1];
         $data = [
             $key1 => [
-                $key2 => $val
-            ]
+                $key2 => $val,
+            ],
         ];
         $container = (object) $data;
         $subject = $this->createInstance(['_normalizeArray', '_containerSet']);
@@ -172,8 +172,8 @@ class ContainerSetPathCapableTraitTest extends TestCase
         $pathException = $this->createInvalidArgumentException('Path is empty');
         $data = [
             $key1 => [
-                $key2 => $val
-            ]
+                $key2 => $val,
+            ],
         ];
         $container = (object) $data;
         $subject = $this->createInstance(['_normalizeArray']);

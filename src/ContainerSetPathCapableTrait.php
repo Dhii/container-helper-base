@@ -19,12 +19,12 @@ trait ContainerSetPathCapableTrait
      * @since [*next-version*]
      *
      * @param array|ArrayAccess|stdClass|BaseContainerInterface $container The top container in the chain.
-     * @param array|Traversable|stdClass $path The list of path segments.
-     * @param mixed                      $value The value to set by path.
+     * @param array|Traversable|stdClass                        $path      The list of path segments.
+     * @param mixed                                             $value     The value to set by path.
      *
      * @throws ContainerExceptionInterface If an error occurred while reading or writing from one of the containers in the chain.
-     * @throws InvalidArgumentException If one of the containers in the chain is invalid.
-     * @throws NotFoundExceptionInterface If one of the containers in the chain does not have the corresponding key.
+     * @throws InvalidArgumentException    If one of the containers in the chain is invalid.
+     * @throws NotFoundExceptionInterface  If one of the containers in the chain does not have the corresponding key.
      * @throws OutOfRangeException
      */
     protected function _containerSetPath(&$container, $path, $value)
@@ -39,14 +39,14 @@ trait ContainerSetPathCapableTrait
 
         if ($pathLength === 1) {
             $this->_containerSet($container, $path[0], $value);
+
             return;
         }
 
         $currentSegment = array_shift($path);
         if (is_array($container)) {
             $this->_containerSetPath($container[$currentSegment], $path, $value);
-        }
-        else {
+        } else {
             $childContainer = $this->_containerGet($container, $currentSegment);
             $this->_containerSetPath($childContainer, $path, $value);
         }
