@@ -2,9 +2,16 @@
 
 namespace Dhii\Data\Container;
 
+use ArrayAccess;
 use Dhii\Util\String\StringableInterface as Stringable;
+use InvalidArgumentException;
+use OutOfRangeException;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface as BaseContainerInterface;
 use Exception as RootException;
+use Psr\Container\NotFoundExceptionInterface;
+use stdClass;
+use Traversable;
 
 /**
  * Functionality for getting data from nested container.
