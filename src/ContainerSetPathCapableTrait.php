@@ -4,6 +4,7 @@ namespace Dhii\Data\Container;
 
 use Dhii\Util\String\StringableInterface as Stringable;
 use Psr\Container\ContainerInterface as BaseContainerInterface;
+use Exception as RootException;
 
 /**
  * Functionality for getting data from nested container.
@@ -30,21 +31,23 @@ trait ContainerSetPathCapableTrait
     {
         $path = $this->_normalizeArray($path);
 
-        if (!count($path)) {
-            return;
+        $pathLength = count($path);
+
+        if (!$pathLength) {
+            throw $this->_createInvalidArgumentException($this->__('Path is empty'), null, null, $container);
         }
 
-        if (count($path) === 1) {
+        if ($pathLength === 1) {
             $this->_containerSet($container, $path[0], $value);
             return;
         }
 
-        $popped = array_shift($path);
+        $currentSegment = array_shift($path);
         if (is_array($container)) {
-            $this->_containerSetPath($container[$popped], $path, $value);
+            $this->_containerSetPath($container[$currentSegment], $path, $value);
         }
         else {
-            $childContainer = $this->_containerGet($container, $popped);
+            $childContainer = $this->_containerGet($container, $currentSegment);
             $this->_containerSetPath($childContainer, $path, $value);
         }
     }
@@ -92,4 +95,37 @@ trait ContainerSetPathCapableTrait
      * @return array The normalized value.
      */
     abstract protected function _normalizeArray($value);
+
+    /**
+     * Creates a new invalid argument exception.
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable|null $message  The error message, if any.
+     * @param int|null               $code     The error code, if any.
+     * @param RootException|null     $previous The inner exception for chaining, if any.
+     * @param mixed|null             $argument The invalid argument, if any.
+     *
+     * @return InvalidArgumentException The new exception.
+     */
+    abstract protected function _createInvalidArgumentException(
+        $message = null,
+        $code = null,
+        RootException $previous = null,
+        $argument = null
+    );
+
+    /**
+     * Translates a string, and replaces placeholders.
+     *
+     * @since [*next-version*]
+     * @see   sprintf()
+     *
+     * @param string $string  The format string to translate.
+     * @param array  $args    Placeholder values to replace in the string.
+     * @param mixed  $context The context for translation.
+     *
+     * @return string The translated string.
+     */
+    abstract protected function __($string, $args = [], $context = null);
 }

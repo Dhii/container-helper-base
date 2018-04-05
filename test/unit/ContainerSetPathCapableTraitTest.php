@@ -2,6 +2,7 @@
 
 namespace Dhii\Data\Container\UnitTest;
 
+use ReflectionMethod;
 use Xpmock\TestCase;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
@@ -74,6 +75,24 @@ class ContainerSetPathCapableTraitTest extends TestCase
     }
 
     /**
+     * Creates a new Not Found exception.
+     *
+     * @since [*next-version*]
+     *
+     * @param string $message The exception message.
+     *
+     * @return MockObject|RootException|InvalidArgumentException The new exception.
+     */
+    public function createInvalidArgumentException($message = '')
+    {
+        $mock = $this->getMockBuilder('InvalidArgumentException')
+            ->setConstructorArgs([$message])
+            ->getMockForAbstractClass();
+
+        return $mock;
+    }
+
+    /**
      * Merges the values of two arrays.
      *
      * The resulting product will be a numeric array where the values of both inputs are present, without duplicates.
@@ -104,5 +123,75 @@ class ContainerSetPathCapableTraitTest extends TestCase
             $subject,
             'A valid instance of the test subject could not be created.'
         );
+    }
+
+    /**
+     * Tests that `_containerSetPath()` works as expected.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerSetPathSuccessfully()
+    {
+        $key1 = uniqid('key1');
+        $key2 = uniqid('key2');
+        $val = uniqid('val');
+        $newVal = uniqid('new-val');
+        $path = [$key1, $key1];
+        $data = [
+            $key1 => [
+                $key2 => $val
+            ]
+        ];
+        $container = (object) $data;
+        $subject = $this->createInstance(['_normalizeArray', '_containerSet']);
+
+        $subject->expects($this->exactly(count($path)))
+            ->method('_normalizeArray')
+            ->will($this->returnArgument(0));
+
+        $subject->expects($this->exactly(1))
+            ->method('_containerSet');
+
+        $reflection = new ReflectionMethod($subject, '_containerSetPath');
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($subject, [&$container, $path, $newVal]);
+    }
+
+    /**
+     * Tests that `_containerSetPath()` will throw exception when path is empty.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerSetPathThrowsWhenPathIsEmpty()
+    {
+        $key1 = uniqid('key1');
+        $key2 = uniqid('key2');
+        $val = uniqid('val');
+        $newVal = uniqid('new-val');
+        $path = [];
+        $pathException = $this->createInvalidArgumentException('Path is empty');
+        $data = [
+            $key1 => [
+                $key2 => $val
+            ]
+        ];
+        $container = (object) $data;
+        $subject = $this->createInstance(['_normalizeArray']);
+
+        $subject->expects($this->exactly(1))
+            ->method('_normalizeArray')
+            ->will($this->returnArgument(0));
+
+        $subject->expects($this->exactly(1))
+            ->method('_createInvalidArgumentException')
+            ->will(
+                $this->throwException($pathException)
+            );
+
+        $this->setExpectedException('InvalidArgumentException');
+
+        $reflection = new ReflectionMethod($subject, '_containerSetPath');
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($subject, [&$container, $path, $newVal]);
     }
 }
