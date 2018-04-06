@@ -98,11 +98,11 @@ class ContainerHasPathCapableTraitTest extends TestCase
     }
 
     /**
-     * Tests that `_containerHasPath()` works correctly.
+     * Tests that `_containerHasPath()` works correctly on true check.
      *
      * @since [*next-version*]
      */
-    public function testContainerHasPath()
+    public function testContainerHasPathTrueCheck()
     {
         $container = uniqid('container');
         $path = [
@@ -130,6 +130,43 @@ class ContainerHasPathCapableTraitTest extends TestCase
 
         $result = $_subject->_containerHasPath($container, $path);
         $this->assertEquals(true, $result, 'Wrong has check returned');
+    }
+
+    /**
+     * Tests that `_containerHasPath()` works correctly on false check.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerHasPathFalseCheck()
+    {
+        $container = uniqid('container');
+        $p1 = uniqid('p1');
+        $p2 = uniqid('p2');
+        $path = [
+            $p1,
+            $p2,
+        ];
+        $pathLength = count($path);
+        $subject = $this->createInstance(['_normalizeArray', '_containerGet', '_containerHas']);
+        $_subject = $this->reflect($subject);
+
+        $subject->expects($this->exactly(1))
+            ->method('_normalizeArray')
+            ->will($this->returnArgument(0));
+
+        $subject->expects($this->exactly($pathLength - 1))
+            ->method('_containerGet')
+            ->will($this->returnArgument(0));
+
+        $subject->expects($this->exactly($pathLength))
+            ->method('_containerHas')
+            ->will($this->returnValueMap([
+                [$container, $p1, true],
+                [$container, $p2, false],
+            ]));
+
+        $result = $_subject->_containerHasPath($container, $path);
+        $this->assertEquals(false, $result, 'Wrong has check returned');
     }
 
     /**
