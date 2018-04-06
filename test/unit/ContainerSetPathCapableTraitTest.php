@@ -168,6 +168,71 @@ class ContainerSetPathCapableTraitTest extends TestCase
     }
 
     /**
+     * Tests that `_containerSetPath()` works as expected when working with array containers.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerSetPathHandleArrays()
+    {
+        $key1 = uniqid('key1');
+        $key2 = uniqid('key2');
+        $val = uniqid('val');
+        $newVal = uniqid('new-val');
+        $path = [$key1, $key1];
+        $data = [
+            $key1 => [
+                $key2 => $val,
+            ],
+        ];
+        $container = $data;
+        $subject = $this->createInstance(['_normalizeArray', '_containerSet']);
+
+        $subject->expects($this->exactly(count($path)))
+            ->method('_normalizeArray')
+            ->will($this->returnArgument(0));
+
+        $subject->expects($this->exactly(0))
+            ->method('_containerGet');
+
+        $reflection = new ReflectionMethod($subject, '_containerSetPath');
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($subject, [&$container, $path, $newVal]);
+    }
+
+    /**
+     * Tests that `_containerSetPath()` works as expected when working with non-array containers.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerSetPathHandleNotArrays()
+    {
+        $key1 = uniqid('key1');
+        $key2 = uniqid('key2');
+        $val = uniqid('val');
+        $newVal = uniqid('new-val');
+        $path = [$key1, $key1];
+        $pathLength = count($path);
+        $data = [
+            $key1 => [
+                $key2 => $val,
+            ],
+        ];
+        $container = (object) $data;
+        $subject = $this->createInstance(['_normalizeArray', '_containerSet']);
+
+        $subject->expects($this->exactly($pathLength))
+            ->method('_normalizeArray')
+            ->will($this->returnArgument(0));
+
+        $subject->expects($this->exactly($pathLength - 1))
+            ->method('_containerGet');
+
+        $reflection = new ReflectionMethod($subject, '_containerSetPath');
+        $reflection->setAccessible(true);
+        $reflection->invokeArgs($subject, [&$container, $path, $newVal]);
+    }
+
+    /**
      * Tests that `_containerSetPath()` will throw exception when path is empty.
      *
      * @since [*next-version*]
