@@ -32,12 +32,11 @@ trait ContainerSetPathCapableTrait
      * @throws ContainerExceptionInterface If an error occurred while reading or writing from one of the containers in the chain.
      * @throws InvalidArgumentException    If one of the containers in the chain is invalid.
      * @throws NotFoundExceptionInterface  If one of the containers in the chain does not have the corresponding key.
-     * @throws OutOfRangeException
+     * @throws OutOfRangeException         If key in one of the containers in the chain is invalid.
      */
     protected function _containerSetPath(&$container, $path, $value)
     {
         $path = $this->_normalizeArray($path);
-
         $pathLength = count($path);
 
         if (!$pathLength) {
