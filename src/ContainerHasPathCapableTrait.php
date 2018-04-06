@@ -9,6 +9,7 @@ use OutOfRangeException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface as BaseContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Exception as RootException;
 use stdClass;
 use Traversable;
 
@@ -35,10 +36,16 @@ trait ContainerHasPathCapableTrait
      */
     protected function _containerHasPath($container, $path)
     {
-        $path        = $this->_normalizeArray($path);
-        $lastSegment = $path[count($path) - 1];
+        $originalPath = $path;
+        $path         = $this->_normalizeArray($path);
+        $pathLength   = count($path);
 
-        $service = $container;
+        if (!$pathLength) {
+            throw $this->_createInvalidArgumentException($this->__('Not a valid path'), null, null, $originalPath);
+        }
+
+        $lastSegment = $path[$pathLength - 1];
+        $service     = $container;
 
         foreach ($path as $segment) {
             $hasSegment = $this->_containerHas($service, $segment);
@@ -95,4 +102,37 @@ trait ContainerHasPathCapableTrait
      * @return bool True if the container has an entry for the given key, false if not.
      */
     abstract protected function _containerHas($container, $key);
+
+    /**
+     * Creates a new invalid argument exception.
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable|null $message  The error message, if any.
+     * @param int|null               $code     The error code, if any.
+     * @param RootException|null     $previous The inner exception for chaining, if any.
+     * @param mixed|null             $argument The invalid argument, if any.
+     *
+     * @return InvalidArgumentException The new exception.
+     */
+    abstract protected function _createInvalidArgumentException(
+        $message = null,
+        $code = null,
+        RootException $previous = null,
+        $argument = null
+    );
+
+    /**
+     * Translates a string, and replaces placeholders.
+     *
+     * @since [*next-version*]
+     * @see   sprintf()
+     *
+     * @param string $string  The format string to translate.
+     * @param array  $args    Placeholder values to replace in the string.
+     * @param mixed  $context The context for translation.
+     *
+     * @return string The translated string.
+     */
+    abstract protected function __($string, $args = [], $context = null);
 }
