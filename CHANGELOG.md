@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
 ### Added
-- `ContainerGetPathCapableTrait`.
+- `ContainerGetPathCapableTrait`, `ContainerSetPathCapableTrait`.
 
 ## [0.1-alpha6] - 2018-03-03
 ### Added

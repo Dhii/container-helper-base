@@ -18,6 +18,7 @@ passed path (list of segments).
 - [`ContainerHasCapableTrait`][ContainerHasCapableTrait] - Allows checking for values by key from anything that is
 a known container implementation.
 - [`ContainerSetCapableTrait`][ContainerSetCapableTrait] - Allows setting a value on a writable container.
+- [`ContainerSetPathCapableTrait`][ContainerSetPathCapableTrait] - Allows setting a value on a nested container using path.
 - [`ContainerSetManyCapableTrait`][ContainerSetManyCapableTrait] - Allows setting multiple values on a writable container.
 - [`ContainerUnsetCapableTrait`][ContainerUnsetCapableTrait] - Allows unsetting a value on a writable container.
 - [`ContainerUnsetManyCapableTrait`][ContainerUnsetManyCapableTrait] - Allows unsetting multiple values on a writable container.
@@ -34,6 +35,7 @@ writable containers.
 [NormalizeContainerCapableTrait]:           src/NormalizeContainerCapableTrait.php
 [NormalizeWritableContainerCapableTrait]:   src/NormalizeWritableContainerCapableTrait.php
 [ContainerSetCapableTrait]:                 src/ContainerSetCapableTrait.php
+[ContainerSetPathCapableTrait]:             src/ContainerSetPathCapableTrait.php
 [ContainerSetManyCapableTrait]:             src/ContainerSetManyCapableTrait.php
 [ContainerUnsetCapableTrait]:               src/ContainerUnsetCapableTrait.php
 [ContainerUnsetManyCapableTrait]:           src/ContainerUnsetManyCapableTrait.php
