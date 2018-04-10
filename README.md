@@ -17,6 +17,8 @@ a known container representation. Types include [`ContainerInterface`][Container
 passed path (list of segments).
 - [`ContainerHasCapableTrait`][ContainerHasCapableTrait] - Allows checking for values by key from anything that is
 a known container implementation.
+- [`ContainerListHasCapableTrait`][ContainerListHasCapableTrait] - Allows checking for a key on a list of containers.
+- [`ContainerListGetCapableTrait`][ContainerListGetCapableTrait] - Allows retrieving a value from a list of containers.
 - [`ContainerSetCapableTrait`][ContainerSetCapableTrait] - Allows setting a value on a writable container.
 - [`ContainerSetManyCapableTrait`][ContainerSetManyCapableTrait] - Allows setting multiple values on a writable container.
 - [`ContainerUnsetCapableTrait`][ContainerUnsetCapableTrait] - Allows unsetting a value on a writable container.
@@ -38,6 +40,8 @@ writable containers.
 [ContainerUnsetCapableTrait]:               src/ContainerUnsetCapableTrait.php
 [ContainerUnsetManyCapableTrait]:           src/ContainerUnsetManyCapableTrait.php
 [NormalizeKeyCapableTrait]:                 src/NormalizeKeyCapableTrait.php
+[ContainerListHasCapableTrait]:             src/ContainerListHasCapableTrait.php
+[ContainerListGetCapableTrait]:             src/ContainerListGetCapableTrait.php
 
 [ContainerInterface]:                       https://github.com/php-fig/container/blob/master/src/ContainerInterface.php
 [NotFoundExceptionInterface]:               https://github.com/php-fig/container/blob/master/src/NotFoundExceptionInterface.php
