@@ -39,4 +39,8 @@ return [
     // (Pass these in as relative paths.
     // The upcoming 0.10.2 release will allow passing 'AlwaysReturnPlugin' if referring to a plugin that is bundled with Phan)
     'plugins' => [],
+
+    'suppress_issue_types' => [
+        'PhanTypeInvalidThrowsIsInterface'
+    ]
 ];
