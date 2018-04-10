@@ -19,14 +19,14 @@ use stdClass;
 trait ContainerHasCapableTrait
 {
     /**
-     * Retrieves an entry from a container or data set.
+     * Checks for a key on a container.
      *
      * @since [*next-version*]
      *
-     * @param array|ArrayAccess|stdClass|BaseContainerInterface $container The container to read from.
-     * @param string|int|float|bool|Stringable                  $key       The key of the value to retrieve.
+     * @param array|ArrayAccess|stdClass|BaseContainerInterface $container The container to check.
+     * @param string|int|float|bool|Stringable                  $key       The key to check for.
      *
-     * @throws ContainerExceptionInterface If an error occurred while reading from the container.
+     * @throws ContainerExceptionInterface If an error occurred while checking the container.
      * @throws OutOfRangeException         If the container or the key is invalid.
      *
      * @return bool True if the container has an entry for the given key, false if not.
