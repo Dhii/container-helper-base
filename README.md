@@ -20,6 +20,7 @@ a known container implementation.
 - [`ContainerListHasCapableTrait`][ContainerListHasCapableTrait] - Allows checking for a key on a list of containers.
 - [`ContainerListGetCapableTrait`][ContainerListGetCapableTrait] - Allows retrieving a value from a list of containers.
 - [`ContainerSetCapableTrait`][ContainerSetCapableTrait] - Allows setting a value on a writable container.
+- [`ContainerSetPathCapableTrait`][ContainerSetPathCapableTrait] - Allows setting a value on a nested container using path.
 - [`ContainerSetManyCapableTrait`][ContainerSetManyCapableTrait] - Allows setting multiple values on a writable container.
 - [`ContainerUnsetCapableTrait`][ContainerUnsetCapableTrait] - Allows unsetting a value on a writable container.
 - [`ContainerUnsetManyCapableTrait`][ContainerUnsetManyCapableTrait] - Allows unsetting multiple values on a writable container.
@@ -36,6 +37,7 @@ writable containers.
 [NormalizeContainerCapableTrait]:           src/NormalizeContainerCapableTrait.php
 [NormalizeWritableContainerCapableTrait]:   src/NormalizeWritableContainerCapableTrait.php
 [ContainerSetCapableTrait]:                 src/ContainerSetCapableTrait.php
+[ContainerSetPathCapableTrait]:             src/ContainerSetPathCapableTrait.php
 [ContainerSetManyCapableTrait]:             src/ContainerSetManyCapableTrait.php
 [ContainerUnsetCapableTrait]:               src/ContainerUnsetCapableTrait.php
 [ContainerUnsetManyCapableTrait]:           src/ContainerUnsetManyCapableTrait.php
