@@ -27,6 +27,8 @@ trait ContainerListHasCapableTrait
      * @param array|stdClass|Traversable $list A list of containers.
      *
      * @throws BaseContainerExceptionInterface If problem checking for key.
+     *
+     * @return bool True if a container in the list has the specified key; false otherwise.
      */
     protected function _containerListHas($key, $list)
     {
