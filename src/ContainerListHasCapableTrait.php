@@ -26,6 +26,7 @@ trait ContainerListHasCapableTrait
      * @param string|Stringable          $key  The key to check for.
      * @param array|stdClass|Traversable $list A list of containers.
      *
+     * @throws InvalidArgumentException        If the key or the list are of the wrong type.
      * @throws BaseContainerExceptionInterface If problem checking for key.
      *
      * @return bool True if a container in the list has the specified key; false otherwise.
