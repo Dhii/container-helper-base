@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
 
+## [0.1-alpha8] - 2018-07-30
+### Fixed
+- `_containerGet()` used `isset()`, which caused exception when retrieving `null` values (#26).
+
 ## [0.1-alpha7] - 2018-04-10
 ### Added
 - `ContainerGetPathCapableTrait`.
