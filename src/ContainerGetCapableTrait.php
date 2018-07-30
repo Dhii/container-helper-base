@@ -72,7 +72,7 @@ trait ContainerGetCapableTrait
         }
 
         if (is_array($container)) {
-            if (!isset($container[$key])) {
+            if (!array_key_exists($key, $container)) {
                 throw $this->_createNotFoundException($this->__('Key "%1$s" not found', [$key]), null, null, null, $origKey);
             }
 
