@@ -310,4 +310,28 @@ class ContainerGetCapableTraitTest extends TestCase
         $this->setExpectedException('Psr\Container\ContainerExceptionInterface');
         $_subject->_containerGet($container, $key);
     }
+
+    /**
+     * Tests the retrieval of a `null` value from an `array` container.
+     *
+     * @link https://github.com/Dhii/container-helper-base/issues/26
+     * @since [*next-version*]
+     */
+    public function testContainerGetArrayFailureExistingKeyNullValue()
+    {
+        $key = uniqid('key');
+        $val = null;
+        $data = [$key => $val];
+
+        $subject = $this->createInstance();
+        $_subject = $this->reflect($subject);
+
+        $subject->expects($this->exactly(1))
+            ->method('_normalizeKey')
+            ->with($key)
+            ->will($this->returnArgument(0));
+
+        $result = $_subject->_containerGet($data, $key);
+        $this->assertEquals($val, $result, 'Wrong value retrieved');
+    }
 }

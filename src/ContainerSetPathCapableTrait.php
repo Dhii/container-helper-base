@@ -36,7 +36,7 @@ trait ContainerSetPathCapableTrait
      */
     protected function _containerSetPath(&$container, $path, $value)
     {
-        $path = $this->_normalizeArray($path);
+        $path       = $this->_normalizeArray($path);
         $pathLength = count($path);
 
         if (!$pathLength) {
