@@ -49,7 +49,7 @@ trait ContainerHasCapableTrait
         }
 
         if (is_array($container)) {
-            return isset($container[$key]);
+            return array_key_exists($key, $container);
         }
 
         if ($container instanceof stdClass) {
