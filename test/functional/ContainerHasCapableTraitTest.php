@@ -319,6 +319,28 @@ class ContainerHasCapableTraitTest extends TestCase
     }
 
     /**
+     * Tests the `_containerHas()` method with an array to assert whether `true` is returned when the array has the
+     * given key with a null value.
+     *
+     * @since [*next-version*]
+     */
+    public function testContainerHasArrayNullValue()
+    {
+        $subject = $this->createInstance();
+        $reflect = $this->reflect($subject);
+
+        $key = uniqid('key-');
+        $expected = true;
+
+        $container = [];
+        $container[$key] = null;
+
+        $actual = $reflect->_containerHas($container, $key);
+
+        $this->assertEquals($expected, $actual, 'Expected and retrieved values do not match.');
+    }
+
+    /**
      * Tests that `_containerHas()` works correctly when using integers to check for numeric string keys in `stdClass` objects`.
      *
      * @since [*next-version*]
