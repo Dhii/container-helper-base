@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
+### Fixed
+- `_containerHas()` used `isset()`, which caused false negatives when retrieving `null` values (#28).
 
 ## [0.1-alpha8] - 2018-07-30
 ### Fixed
